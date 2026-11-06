@@ -243,6 +243,7 @@ const TRIP_SCHEDULE = {
     region: "En Route to Tokyo",
     mapQuery: "Haneda Airport, Tokyo",
     statusSummary: "Josh is traveling! En route from Little Rock (LIT) to Houston (IAH) and crossing the Pacific on ANA NH113 to Tokyo.",
+    mediumSummary: "Traveling LIT to Houston, then boarding ANA NH113 to Tokyo across the Pacific.",
     todaysFocus: "13-hour flight across the Pacific Ocean. Landing in Tokyo tomorrow afternoon.",
     hotel: {
       name: "In Flight (ANA NH113)",
@@ -256,6 +257,7 @@ const TRIP_SCHEDULE = {
     region: "Shinjuku (Arrival Night)",
     mapQuery: "Citadines Shinjuku Tokyo",
     statusSummary: "Josh landed at Tokyo Haneda Airport (3:25 PM JST)! Headed to Citadines Shinjuku Tokyo to check in, unpack, explore local Shinjuku, and rest up before the tour kicks off tomorrow.",
+    mediumSummary: "Landed at Tokyo Haneda! Heading to Citadines Shinjuku to check in & rest.",
     todaysFocus: "Haneda arrival transit, digital Suica activation, dinner in Shinjuku, and settling into Citadines Shinjuku.",
     hotel: {
       name: "Citadines Shinjuku Tokyo",
@@ -269,6 +271,7 @@ const TRIP_SCHEDULE = {
     region: "Kabukicho & Shinjuku",
     mapQuery: "Hotel Groove Shinjuku",
     statusSummary: "Josh checked out of Citadines Shinjuku and transferred to Hotel Groove Shinjuku in Kabukicho! Visiting Shinjuku Gyoen National Garden and joining the tour orientation.",
+    mediumSummary: "Transferred to Hotel Groove Kabukicho. Garden walk & tour orientation.",
     todaysFocus: "Hotel transfer to Hotel Groove Shinjuku, Shinjuku Gyoen gardens, tour orientation meetup.",
     hotel: {
       name: "Hotel Groove Shinjuku (Tokyu Kabukicho Tower)",
@@ -282,6 +285,7 @@ const TRIP_SCHEDULE = {
     region: "Fuji-Hakone-Izu",
     mapQuery: "Hakone Ropeway, Japan",
     statusSummary: "SideQuests Day 1! Josh is on an all-day excursion to Mt. Fuji, Chureito Pagoda, and the Hakone Ropeway, followed by the group Welcome Dinner.",
+    mediumSummary: "All-day Mt. Fuji & Hakone Ropeway excursion, followed by Welcome Dinner.",
     todaysFocus: "Mt. Fuji vista, volcanic Hakone valley, Open-Air Museum, 7:30 PM Welcome Dinner.",
     hotel: {
       name: "Hotel Groove Shinjuku",
@@ -295,6 +299,7 @@ const TRIP_SCHEDULE = {
     region: "Tsukiji, Asakusa & Harajuku",
     mapQuery: "Senso-ji, Asakusa, Tokyo",
     statusSummary: "SideQuests Day 2! Josh has sushi-making class at Tsukiji, visiting Senso-ji Temple in Asakusa, Shibuya Crossing, and an evening Ni-chome tour.",
+    mediumSummary: "Tsukiji sushi class, Senso-ji Temple, Shibuya Crossing & Ni-chome tour.",
     todaysFocus: "Tsukiji Market sushi lunch, Tokyo's oldest temple (Senso-ji), Harajuku fashion, evening cultural walking tour.",
     hotel: {
       name: "Hotel Groove Shinjuku",
@@ -308,6 +313,7 @@ const TRIP_SCHEDULE = {
     region: "Higashiyama District",
     mapQuery: "Solaria Nishitetsu Hotel Kyoto Premier",
     statusSummary: "Josh took the 185 mph Nozomi Bullet Train to Kyoto! This afternoon he is exploring the historic wooden streets of Higashiyama and Nishiki Market.",
+    mediumSummary: "Nozomi Bullet Train to Kyoto! Exploring historic Higashiyama & markets.",
     todaysFocus: "Shinkansen bullet train transit, 1,350-year-old Yasaka Shrine, Nishiki Food Market.",
     hotel: {
       name: "Solaria Nishitetsu Hotel Kyoto Premier",
@@ -321,6 +327,7 @@ const TRIP_SCHEDULE = {
     region: "Arashiyama & Kiyomizu",
     mapQuery: "Arashiyama Bamboo Grove, Kyoto",
     statusSummary: "SideQuests Day 4! Josh is walking through the Arashiyama Bamboo Grove, doing an authentic kimono tea ceremony, and visiting Kiyomizu-dera Temple.",
+    mediumSummary: "Arashiyama Bamboo Grove, kimono tea ceremony, and Kiyomizu-dera Temple.",
     todaysFocus: "Arashiyama Bamboo Grove, Tenryu-ji Zen temple, kimono dressing & chanoyu tea ceremony, Kiyomizudera stage.",
     hotel: {
       name: "Solaria Nishitetsu Hotel Kyoto Premier",
@@ -334,6 +341,7 @@ const TRIP_SCHEDULE = {
     region: "Nara Park & Dotonbori",
     mapQuery: "Dotonbori, Osaka",
     statusSummary: "Josh visited the bowing deer of Nara and the giant Bronze Buddha at Todaiji, and has now arrived in Osaka under the famous neon lights of Dotonbori!",
+    mediumSummary: "Bowing deer of Nara, giant Bronze Buddha, and neon Dotonbori in Osaka.",
     todaysFocus: "Sacred bowing sika deer in Nara, 15m Great Buddha, Osaka Castle, neon Dotonbori street food.",
     hotel: {
       name: "voco Osaka Central (IHG)",
@@ -347,6 +355,7 @@ const TRIP_SCHEDULE = {
     region: "Shinsekai & Namba",
     mapQuery: "voco Osaka Central",
     statusSummary: "SideQuests Day 6! Free daytime in Osaka exploring Kuromon Market, followed by a 4 PM retro Shinsekai tour and the official 6 PM Farewell Dinner.",
+    mediumSummary: "Exploring Kuromon Market, retro Shinsekai district & Farewell Dinner.",
     todaysFocus: "Free exploration in Osaka, Tsutenkaku Tower & kushikatsu, tour grand finale Farewell Dinner.",
     hotel: {
       name: "voco Osaka Central (IHG)",
@@ -360,6 +369,7 @@ const TRIP_SCHEDULE = {
     region: "Universal Studios Japan",
     mapQuery: "Universal Studios Japan, Osaka",
     statusSummary: "Core tour concluded! Josh joined tour host Peter for a bonus day trip to Universal Studios Japan (Super Nintendo World & Donkey Kong Country)!",
+    mediumSummary: "Universal Studios Japan bonus day: Super Nintendo World & Donkey Kong!",
     todaysFocus: "Mario Kart, Donkey Kong Country, Super Nintendo World, post-trip night at voco Osaka.",
     hotel: {
       name: "voco Osaka Central (IHG)",
@@ -373,6 +383,7 @@ const TRIP_SCHEDULE = {
     region: "Journey Home ✈",
     mapQuery: "Haneda Airport, Tokyo",
     statusSummary: "Josh is heading home today! Bullet train to Tokyo Haneda Airport, flight UA882 to Chicago (ORD), and connecting back home to Little Rock (LIT)!",
+    mediumSummary: "Nozomi to Haneda, flight UA882 to Chicago, and connecting back home!",
     todaysFocus: "9 AM Nozomi to Tokyo, 5:15 PM ANA/United flight to Chicago, landing Little Rock at 9:54 PM tonight.",
     hotel: {
       name: "Home Sweet Home (USA)",
@@ -824,6 +835,7 @@ async function makeWidget(family = "medium") {
     cBar.setPadding(6, 8, 6, 8);
     cBar.url = "sms:";
 
+    cBar.centerAlignContent();
     let avatar = cBar.addImage(spriteImg);
     avatar.imageSize = new Size(26, 26);
     avatar.cornerRadius = 4;
@@ -836,23 +848,19 @@ async function makeWidget(family = "medium") {
     let cBadge = cInfo.addText(contactStatus.badge);
     cBadge.font = Font.heavySystemFont(8.5);
     cBadge.textColor = new Color(contactStatus.color);
-    cBadge.minimumScaleFactor = 0.85;
+    cBadge.lineLimit = 1;
+    cBadge.minimumScaleFactor = 0.8;
 
     let cNote = cInfo.addText(isPreTrip ? (diffDays + "d to takeoff") : (joshHour >= 23 || joshHour < 7 ? "Sleeping in JST" : "Active in Tokyo"));
     cNote.font = Font.mediumSystemFont(8);
     cNote.textColor = new Color("#cbd5e1");
     cNote.lineLimit = 1;
-    cNote.minimumScaleFactor = 0.85;
+    cNote.minimumScaleFactor = 0.8;
 
     cBar.addSpacer();
 
-    let cBtn = cBar.addStack();
-    cBtn.backgroundColor = new Color("#1e3a5f");
-    cBtn.cornerRadius = 5;
-    cBtn.setPadding(3, 6, 3, 6);
-    let cBtnTxt = cBtn.addText("💬 Text");
-    cBtnTxt.font = Font.boldSystemFont(8);
-    cBtnTxt.textColor = new Color("#93c5fd");
+    let cIcon = cBar.addText("💬");
+    cIcon.font = Font.systemFont(9);
 
     left.addSpacer(7);
 
@@ -921,7 +929,7 @@ async function makeWidget(family = "medium") {
 
     fCard.addSpacer(3);
 
-    let fBlurb = fCard.addText(info.statusSummary);
+    let fBlurb = fCard.addText(info.mediumSummary || info.statusSummary);
     fBlurb.font = Font.mediumSystemFont(9.5);
     fBlurb.textColor = Color.white();
     fBlurb.lineLimit = 3;
@@ -953,10 +961,10 @@ async function makeWidget(family = "medium") {
     hLabel.url = getActionUrl("hotel");
 
     let hName = hInfo.addText(info.hotel.name);
-    hName.font = Font.boldSystemFont(9);
+    hName.font = Font.boldSystemFont(8.5);
     hName.textColor = new Color("#f1f5f9");
     hName.lineLimit = 1;
-    hName.minimumScaleFactor = 0.8;
+    hName.minimumScaleFactor = 0.75;
     hName.url = getActionUrl("hotel");
 
     hBox.addSpacer();
@@ -964,10 +972,10 @@ async function makeWidget(family = "medium") {
     let hBtn = hBox.addStack();
     hBtn.backgroundColor = new Color("#27272a");
     hBtn.cornerRadius = 4;
-    hBtn.setPadding(3, 6, 3, 6);
+    hBtn.setPadding(2, 5, 2, 5);
     hBtn.url = getActionUrl("hotel");
-    let hBtnTxt = hBtn.addText("View ↗");
-    hBtnTxt.font = Font.boldSystemFont(8);
+    let hBtnTxt = hBtn.addText("↗");
+    hBtnTxt.font = Font.boldSystemFont(9);
     hBtnTxt.textColor = new Color("#ffd166");
     hBtnTxt.url = getActionUrl("hotel");
 
@@ -988,7 +996,7 @@ async function makeWidget(family = "medium") {
     btnEmerg.setPadding(5, 6, 5, 6);
     btnEmerg.url = getActionUrl("emergency");
     btnEmerg.addSpacer();
-    let mEmergTxt = btnEmerg.addText("🚨 Emergency Hub");
+    let mEmergTxt = btnEmerg.addText("🚨 Emergency");
     mEmergTxt.font = Font.boldSystemFont(8);
     mEmergTxt.textColor = new Color("#fca5a5");
     mEmergTxt.lineLimit = 1;
@@ -1010,7 +1018,7 @@ async function makeWidget(family = "medium") {
     btnFlights.setPadding(5, 6, 5, 6);
     btnFlights.url = getFlightUrl(now);
     btnFlights.addSpacer();
-    let flightBtnLabel = "✈️ Flight Tracker";
+    let flightBtnLabel = "✈️ Live Flights";
     let mFlightTxt = btnFlights.addText(flightBtnLabel);
     mFlightTxt.font = Font.boldSystemFont(8);
     mFlightTxt.textColor = new Color("#93c5fd");
@@ -1216,6 +1224,7 @@ async function loadCurrentStatus() {
       stageLabel: diffDays + "d to takeoff",
       mapQuery: "Citadines Shinjuku Tokyo",
       statusSummary: "Once Josh departs on March 21, this dynamic tracker will update in real-time to show where Josh is and what he's doing at every moment according to his itinerary!",
+      mediumSummary: "Live tracking activates March 21 at takeoff! Tap Tour ↗ for the complete 10-day trip itinerary.",
       todaysFocus: "Pre-trip packing & preparations. Tap Tour for the complete 10-day itinerary.",
       hotel: {
         name: "Citadines Shinjuku",
@@ -1236,6 +1245,7 @@ async function loadCurrentStatus() {
       stageLabel: "In Japan",
       mapQuery: dayData.mapQuery,
       statusSummary: dayData.statusSummary,
+      mediumSummary: dayData.mediumSummary || dayData.statusSummary,
       todaysFocus: dayData.todaysFocus,
       hotel: dayData.hotel,
       isFlightDay: jstStr === "2027-03-21" || jstStr === "2027-03-31"
@@ -1249,6 +1259,7 @@ async function loadCurrentStatus() {
       stageLabel: "Trip Completed",
       mapQuery: "Little Rock, AR",
       statusSummary: "Josh has returned safely home from Japan! Ask him about Mt. Fuji, Kyoto temples, and the neon lights of Osaka.",
+      mediumSummary: "Josh returned safely home to Little Rock! Tap Tour ↗ to review memories.",
       todaysFocus: "Unpacking souvenirs, settling back in, and recovering from transpacific jet lag.",
       hotel: {
         name: "Home Sweet Home (USA)",

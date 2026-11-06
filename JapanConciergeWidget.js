@@ -142,7 +142,7 @@ async function makeWidget() {
   bg.locations = [0, 1];
   bg.colors = [new Color("#131722"), new Color("#080a0e")];
   w.backgroundGradient = bg;
-  w.setPadding(14, 16, 12, 16);
+  w.setPadding(18, 16, 16, 16);
 
   let [info, yen] = await Promise.all([loadItinerary(), fetchYen()]);
   let hr = now.getHours();
@@ -188,11 +188,11 @@ async function makeWidget() {
   wTxt.rightAlignText();
 
   let clkTxt = hRight.addText("TYO " + tyo + "  •  LIT " + lit);
-  clkTxt.font = Font.mediumSystemFont(9);
+  clkTxt.font = Font.mediumSystemFont(9.5);
   clkTxt.textColor = new Color("#64748b");
   clkTxt.rightAlignText();
 
-  w.addSpacer(7);
+  w.addSpacer(10);
 
   // Milestone Countdown Banner (Dynamic from Section 1)
   if (ms) {
@@ -200,7 +200,7 @@ async function makeWidget() {
     mBox.layoutHorizontally();
     mBox.backgroundColor = new Color("#1e293b", 0.65);
     mBox.cornerRadius = 6;
-    mBox.setPadding(3, 8, 3, 8);
+    mBox.setPadding(5, 9, 5, 9);
 
     let mDot = mBox.addText("⏳ ");
     mDot.font = Font.systemFont(8);
@@ -208,6 +208,8 @@ async function makeWidget() {
     let mText = mBox.addText(ms.text);
     mText.font = Font.boldSystemFont(9);
     mText.textColor = new Color("#cbd5e1");
+    mText.lineLimit = 1;
+    mText.minimumScaleFactor = 0.8;
 
     mBox.addSpacer();
 
@@ -215,7 +217,7 @@ async function makeWidget() {
     mBadge.font = Font.heavySystemFont(9);
     mBadge.textColor = new Color("#ffd166");
 
-    w.addSpacer(7);
+    w.addSpacer(10);
   }
 
   // Schedule Focus Card
@@ -223,7 +225,7 @@ async function makeWidget() {
   fBox.layoutVertically();
   fBox.backgroundColor = new Color("#161d2b");
   fBox.cornerRadius = 9;
-  fBox.setPadding(8, 11, 8, 11);
+  fBox.setPadding(10, 12, 10, 12);
   fBox.url = toBrowserUrl(DOC_URL);
 
   let fTop = fBox.addStack();
@@ -244,19 +246,19 @@ async function makeWidget() {
   fBox.addSpacer(3);
 
   let fMain = fBox.addText(info.activity);
-  fMain.font = Font.systemFont(10);
+  fMain.font = Font.systemFont(10.5);
   fMain.textColor = Color.white();
   fMain.lineLimit = 3;
   fMain.minimumScaleFactor = 0.85;
 
-  w.addSpacer(8);
+  w.addSpacer(10);
 
   // Gemini Intel Card (Tap to Expand Modal)
   let aBox = w.addStack();
   aBox.layoutVertically();
   aBox.backgroundColor = new Color("#221a28");
   aBox.cornerRadius = 9;
-  aBox.setPadding(8, 11, 8, 11);
+  aBox.setPadding(10, 12, 10, 12);
   aBox.url = baseRun ? (baseRun + sep + "action=intel") : toBrowserUrl(DOC_URL);
 
   let aTop = aBox.addStack();
@@ -277,19 +279,19 @@ async function makeWidget() {
   aBox.addSpacer(3);
 
   let aTip = aBox.addText(info.tip);
-  aTip.font = Font.mediumSystemFont(10);
+  aTip.font = Font.mediumSystemFont(10.5);
   aTip.textColor = new Color("#f0f4f8");
   aTip.lineLimit = 3;
   aTip.minimumScaleFactor = 0.85;
 
-  w.addSpacer(8);
+  w.addSpacer(10);
 
   // Contextual Japanese Phrase of the Day / Hour
   let pBox = w.addStack();
   pBox.layoutHorizontally();
   pBox.backgroundColor = new Color("#151a24");
   pBox.cornerRadius = 8;
-  pBox.setPadding(7, 10, 7, 10);
+  pBox.setPadding(9, 11, 9, 11);
   pBox.url = toBrowserUrl("https://translate.google.com/?sl=ja&tl=en&text=" + encodeURIComponent(jp) + "&op=translate");
 
   let pLeft = pBox.addStack();
@@ -319,7 +321,7 @@ async function makeWidget() {
   pMean.textColor = new Color("#ffd166");
   pMean.minimumScaleFactor = 0.85;
 
-  w.addSpacer(9);
+  w.addSpacer(12);
 
   // Action Buttons
   let row = w.addStack();
@@ -328,7 +330,7 @@ async function makeWidget() {
   let btnTaxi = row.addStack();
   btnTaxi.backgroundColor = new Color("#273142");
   btnTaxi.cornerRadius = 6;
-  btnTaxi.setPadding(5, 10, 5, 10);
+  btnTaxi.setPadding(7, 11, 7, 11);
   btnTaxi.url = baseRun ? (baseRun + sep + "action=taxi") : toBrowserUrl(DOC_URL);
 
   let tTxt = btnTaxi.addText("🚕 Taxi Card");
@@ -340,7 +342,7 @@ async function makeWidget() {
   let btnWallet = row.addStack();
   btnWallet.backgroundColor = new Color("#183152");
   btnWallet.cornerRadius = 6;
-  btnWallet.setPadding(5, 10, 5, 10);
+  btnWallet.setPadding(7, 11, 7, 11);
   btnWallet.url = "shoebox://";
   let wBtn = btnWallet.addText("💳 Suica / Transit");
   wBtn.font = Font.boldSystemFont(9);
@@ -351,7 +353,7 @@ async function makeWidget() {
   let btnYen = row.addStack();
   btnYen.backgroundColor = new Color("#24252b");
   btnYen.cornerRadius = 6;
-  btnYen.setPadding(5, 10, 5, 10);
+  btnYen.setPadding(7, 11, 7, 11);
   btnYen.url = baseRun ? (baseRun + sep + "action=converter") : toBrowserUrl("https://www.google.com/search?q=1000+jpy+to+usd");
   let yTxt = btnYen.addText("💴 " + yen);
   yTxt.font = Font.boldSystemFont(9);
@@ -469,7 +471,12 @@ function parseMilestonesFromDoc(txt, now) {
       let d = new Date(year, mon, day, hour, min, 0);
       if (d > now) {
         let label = clean.replace(/https?:\/\/[^\s\)]+/g, "").replace(/\s+/g, " ").trim();
-        if (label.length > 44) label = label.substring(0, 41) + "...";
+        // Remove trailing punctuation or parentheticals if overly long, without using ellipses
+        if (label.length > 46) {
+          let cut = label.substring(0, 46);
+          let lastSpace = cut.lastIndexOf(" ");
+          label = lastSpace > 20 ? cut.substring(0, lastSpace) : cut;
+        }
         upcoming.push({ date: d, text: label });
       }
     }
