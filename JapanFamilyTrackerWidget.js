@@ -313,41 +313,48 @@ const TRIP_SCHEDULE = {
 // RETRO 8-BIT PIXEL JOSH SPRITE GENERATOR (OFFLINE RETINA CANVAS)
 // -------------------------------------------------------------
 const PIXEL_PALETTE = {
-  'H': '#3b2219', // hair (dark brown)
-  'S': '#fcd34d', // skin tone (warm yellow/tan)
-  'E': '#1e293b', // eyes/brows
-  'W': '#ffffff', // white highlight / stars
-  'B': '#2563eb', // blue adventure jacket
-  'P': '#334155', // dark slate pants
-  'O': '#b45309', // leather backpack brown
-  'R': '#ef4444', // red (ramen bowl / heart)
-  'Y': '#facc15', // yellow checklist / stars / noodles
+  'H': '#784728', // hair base (warm golden-brown from photo)
+  'h': '#553018', // fade sides (neatly tapered)
+  'F': '#9b643c', // hair highlight
+  'S': '#fde2b6', // skin tone (fair warm)
+  's': '#ebb991', // nose / wireframe bridge
+  'G': '#d97706', // gold wireframe aviator glasses
+  'E': '#1e293b', // eyes (pupils)
+  'B': '#58361e', // trimmed beard & mustache (from photo)
+  'W': '#ffffff', // bright smile / white teeth
+  'T': '#9ca3af', // athletic crew-neck gray tee (from photo)
+  't': '#6b7280', // t-shirt shadow / folds
+  'P': '#1e293b', // dark athletic joggers
+  'K': '#0f172a', // black watch on wrist / shoes
+  'O': '#b45309', // leather adventure backpack
+  'Y': '#facc15', // gold checklist / passport
   'C': '#38bdf8', // coffee mug / blanket cyan
-  'M': '#64748b', // bed frame / metal
+  'M': '#64748b', // bed frame
   'Z': '#c084fc', // purple Zzz
-  'F': '#e2e8f0', // steam / fluffy clouds
-  'K': '#0f172a'  // black shoes / outline
+  'R': '#ef4444', // red ramen bowl
+  'V': '#e2e8f0', // steam / fluffy clouds
+  'F_CL': '#e2e8f0' // fluffy clouds alias
 };
 
 const PIXEL_MATRICES = {
-  // Pre-Trip Mode: Josh with backpack holding golden checklist / passport!
+  // Pre-Trip Mode: Josh with athletic gray tee, gold wireframe glasses, neat beard, watch & backpack!
   preparing: [
-    "....HHHHHH......",
-    "...HHHHHHHH.....",
-    "..HHSSSSHSS.....",
-    "..HHSEESEHH.....",
-    "..HHSSSSSHH.....",
-    "...HHSSSS.......",
-    "..OOBBBBBB.YY...",
-    ".OOOBBBBBB.YY...",
-    ".OOOBBBBBB......",
-    "..O.BBBBBB......",
-    "....PPPPPP......",
-    "....PPPPPP......",
-    "...PPP..PPP.....",
-    "...PP....PP.....",
-    "..KKK....KKK....",
-    "................"
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hHSSSSSSHh...",
+    "...hGEGsGEGh....",
+    "...hSGsSSGSh....",
+    "...hBBWWBBBh....",
+    "....hBBBBBh.....",
+    "..OOTTTTTTTT....",
+    "..OOTTTTTTTT.YY.",
+    "..OOTTTTTTTT.YY.",
+    "..K.TTTTTTTT....",
+    ".....PPPPPP.....",
+    ".....PPPPPP.....",
+    "....PPP..PPP....",
+    "....PP....PP....",
+    "...KKK....KKK..."
   ],
 
   // Trip Mode: Night sleep
@@ -356,10 +363,10 @@ const PIXEL_MATRICES = {
     "............ZZ..",
     "...........Z....",
     "..........ZZ....",
-    ".....HHHH.......",
-    "...HHSHHHH......",
-    "..HHSSSEEEH.....",
-    "..HSSSSSEEE.....",
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hGEGsGEGh....",
+    "...hBBWWBBBh....",
     ".CCCCCCCCCCCCCC.",
     ".CCCCCCCCCCCCCC.",
     ".CCCCCCCCCCCCCC.",
@@ -372,62 +379,62 @@ const PIXEL_MATRICES = {
 
   // Trip Mode: Morning coffee prep
   morning: [
-    ".....HHHH.......",
-    "...HHHHHHHH.....",
-    "..HHSSSSHSS.....",
-    "..HHSSESESS.....",
-    "..HHSSSEESS.....",
-    "...HHSSSSS......",
-    "....BBBBBB.FF...",
-    "...BBBBBBBC.F...",
-    "...BBBBBBBC.....",
-    "...BBBBBBBCC....",
-    "....PPPPPP......",
-    "....PPPPPP......",
-    "....PP..PP......",
-    "....PP..PP......",
-    "...KKK..KKK.....",
-    "................"
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hHSSSSSSHh...",
+    "...hGEGsGEGh....",
+    "...hSGsSSGSh....",
+    "...hBBWWBBBh....",
+    "....hBBBBBh.....",
+    "....TTTTTTTT.VV.",
+    "...TTTTTTTTC.V..",
+    "...TTTTTTTTC....",
+    "..K.TTTTTTTTCC..",
+    ".....PPPPPP.....",
+    ".....PPPPPP.....",
+    "....PPP..PPP....",
+    "....PP....PP....",
+    "...KKK....KKK..."
   ],
 
   // Trip Mode: Daytime active questing
   explore: [
-    "....HHHHHH......",
-    "...HHHHHHHH.....",
-    "..HHSSSSHSS.....",
-    "..HHSEESEHH.....",
-    "..HHSSSSSHH.....",
-    "...HHSSSS.......",
-    "..OOBBBBBB......",
-    ".OOOBBBBBB......",
-    ".OOOBBBBBB......",
-    "..O.BBBBBB......",
-    "....PPPPPP......",
-    "....PPPPPP......",
-    "...PPP..PPP.....",
-    "...PP....PP.....",
-    "..KKK....KKK....",
-    "................"
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hHSSSSSSHh...",
+    "...hGEGsGEGh....",
+    "...hSGsSSGSh....",
+    "...hBBWWBBBh....",
+    "....hBBBBBh.....",
+    "..OOTTTTTTTT....",
+    "..OOTTTTTTTT....",
+    "..OOTTTTTTTT....",
+    "..K.TTTTTTTT....",
+    ".....PPPPPP.....",
+    ".....PPPPPP.....",
+    "....PPP..PPP....",
+    "....PP....PP....",
+    "...KKK....KKK..."
   ],
 
   // Trip Mode: Evening dinner & ramen
   dining: [
-    ".....HHHH.......",
-    "...HHHHHHHH.....",
-    "..HHSSSSHSS.....",
-    "..HHSEESEHH.....",
-    "..HHSSSSSHH.....",
-    "...HHSSSSS......",
-    "....BBBBBB..FF..",
-    "...BBBBBBB.F.F..",
-    "...BBBBBBB..YY..",
-    "...RRRRRRRR.....",
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hHSSSSSSHh...",
+    "...hGEGsGEGh....",
+    "...hSGsSSGSh....",
+    "...hBBWWBBBh....",
+    "....hBBBBBh.....",
+    "....TTTTTTTT.VV.",
+    "...TTTTTTTT.V.V.",
+    "...TTTTTTTT..YY.",
+    "..KRRRRRRRR.....",
     "....RRRRRR......",
-    "....PPPPPP......",
-    "....PPPPPP......",
-    "....PP..PP......",
-    "...KKK..KKK.....",
-    "................"
+    ".....PPPPPP.....",
+    ".....PPPPPP.....",
+    "....PPP..PPP....",
+    "...KKK....KKK..."
   ],
 
   // Trip Mode: In flight
@@ -446,28 +453,28 @@ const PIXEL_MATRICES = {
     "........WWWW....",
     ".........WWW....",
     "..........WW....",
-    ".FFFF......FFFF.",
-    "FFFFFFFF..FFFFFF"
+    ".VVVV......VVVV.",
+    "VVVVVVVV..VVVVVV"
   ],
 
   // Post-Trip Mode: Safely Home
   home: [
-    "....HHHHHH......",
-    "...HHHHHHHH.....",
-    "..HHSSSSHSS.....",
-    "..HHSEESEHH.....",
-    "..HHSSSSSHH.....",
-    "...HHSSSS.......",
-    "....BBBBBB......",
-    "...WBBBBBBW.....",
-    "...WBBBBBBW.....",
-    "....BBBBBB......",
-    "....PPPPPP......",
-    "....PPPPPP......",
-    "...PPP..PPP.....",
-    "...PP....PP.....",
-    "..KKK....KKK....",
-    "................"
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hHSSSSSSHh...",
+    "...hGEGsGEGh....",
+    "...hSGsSSGSh....",
+    "...hBBWWBBBh....",
+    "....hBBBBBh.....",
+    "....TTTTTTTT....",
+    "...WTTTTTTTTW...",
+    "...WTTTTTTTTW...",
+    "..K.TTTTTTTT....",
+    ".....PPPPPP.....",
+    ".....PPPPPP.....",
+    "....PPP..PPP....",
+    "....PP....PP....",
+    "...KKK....KKK..."
   ]
 };
 

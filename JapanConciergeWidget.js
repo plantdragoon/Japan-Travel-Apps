@@ -244,9 +244,10 @@ async function makeWidget() {
   fBox.addSpacer(3);
 
   let fMain = fBox.addText(info.activity);
-  fMain.font = Font.systemFont(11);
+  fMain.font = Font.systemFont(10);
   fMain.textColor = Color.white();
-  fMain.lineLimit = 2;
+  fMain.lineLimit = 3;
+  fMain.minimumScaleFactor = 0.85;
 
   w.addSpacer(8);
 
@@ -276,9 +277,10 @@ async function makeWidget() {
   aBox.addSpacer(3);
 
   let aTip = aBox.addText(info.tip);
-  aTip.font = Font.mediumSystemFont(11);
+  aTip.font = Font.mediumSystemFont(10);
   aTip.textColor = new Color("#f0f4f8");
-  aTip.lineLimit = 2;
+  aTip.lineLimit = 3;
+  aTip.minimumScaleFactor = 0.85;
 
   w.addSpacer(8);
 
@@ -306,14 +308,16 @@ async function makeWidget() {
   pLeft.addSpacer(2);
 
   let pText = pLeft.addText(jp + "  (" + rom + ")");
-  pText.font = Font.boldSystemFont(11);
+  pText.font = Font.boldSystemFont(10.5);
   pText.textColor = Color.white();
+  pText.minimumScaleFactor = 0.85;
 
   pBox.addSpacer();
 
   let pMean = pBox.addText("“" + en + "”");
-  pMean.font = Font.semiboldSystemFont(10);
+  pMean.font = Font.semiboldSystemFont(9.5);
   pMean.textColor = new Color("#ffd166");
+  pMean.minimumScaleFactor = 0.85;
 
   w.addSpacer(9);
 
@@ -1135,8 +1139,8 @@ Traveler Profile & Rules from Master Hub:
       city: "Tokyo",
       day: `Countdown: ${days} Days Until LIT ✈ TYO`,
       weather: "63°F • Clear",
-      activity: "Next action: ASAP reserve Citadines Shinjuku buffer night. Check-in for ANA NH113 aisle seat on Mar 20 @ 11:10 AM CST.",
-      tip: "Dec 22: $3,224 tour installment due. Acquire water-resistant tattoo cover sleeves for onsens before departure!",
+      activity: "Next action: Reserve Citadines Shinjuku. Check in online for ANA NH113 aisle seat on Mar 20.",
+      tip: "Dec 22: $3,224 tour installment due. Acquire water-resistant tattoo sleeves for onsens before departure.",
       products: localProducts,
       activeMilestone: localMilestone,
       rawDocText: txt,

@@ -1,3 +1,169 @@
+const PIXEL_PALETTE = {
+  'H': '#784728', // hair base (warm golden-brown from photo)
+  'h': '#553018', // fade sides (neatly tapered)
+  'F': '#9b643c', // hair highlight
+  'S': '#fde2b6', // skin tone (fair warm)
+  's': '#ebb991', // nose / wireframe bridge
+  'G': '#d97706', // gold wireframe aviator glasses
+  'E': '#1e293b', // eyes (pupils)
+  'B': '#58361e', // trimmed beard & mustache (from photo)
+  'W': '#ffffff', // bright smile / white teeth
+  'T': '#9ca3af', // athletic crew-neck gray tee (from photo)
+  't': '#6b7280', // t-shirt shadow / folds
+  'P': '#1e293b', // dark athletic joggers
+  'K': '#0f172a', // black watch on wrist / shoes
+  'O': '#b45309', // leather adventure backpack
+  'Y': '#facc15', // gold checklist / passport
+  'C': '#38bdf8', // coffee mug / blanket cyan
+  'M': '#64748b', // bed frame
+  'Z': '#c084fc', // purple Zzz
+  'R': '#ef4444', // red ramen bowl
+  'V': '#e2e8f0', // steam / fluffy clouds
+  'F_CL': '#e2e8f0' // fluffy clouds alias
+};
+
+const PIXEL_MATRICES = {
+  // Pre-Trip Mode: Josh with athletic gray tee, gold wireframe glasses, neat beard, watch & backpack!
+  preparing: [
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hHSSSSSSHh...",
+    "...hGEGsGEGh....",
+    "...hSGsSSGSh....",
+    "...hBBWWBBBh....",
+    "....hBBBBBh.....",
+    "..OOTTTTTTTT....",
+    "..OOTTTTTTTT.YY.",
+    "..OOTTTTTTTT.YY.",
+    "..K.TTTTTTTT....",
+    ".....PPPPPP.....",
+    ".....PPPPPP.....",
+    "....PPP..PPP....",
+    "....PP....PP....",
+    "...KKK....KKK..."
+  ],
+
+  // Trip Mode: Night sleep
+  sleep: [
+    "................",
+    "............ZZ..",
+    "...........Z....",
+    "..........ZZ....",
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hGEGsGEGh....",
+    "...hBBWWBBBh....",
+    ".CCCCCCCCCCCCCC.",
+    ".CCCCCCCCCCCCCC.",
+    ".CCCCCCCCCCCCCC.",
+    ".CCCCCCCCCCCCCC.",
+    ".CCCCCCCCCCCCCC.",
+    ".MMMMMMMMMMMMMM.",
+    ".MM..........MM.",
+    "................"
+  ],
+
+  // Trip Mode: Morning coffee prep
+  morning: [
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hHSSSSSSHh...",
+    "...hGEGsGEGh....",
+    "...hSGsSSGSh....",
+    "...hBBWWBBBh....",
+    "....hBBBBBh.....",
+    "....TTTTTTTT.VV.",
+    "...TTTTTTTTC.V..",
+    "...TTTTTTTTC....",
+    "..K.TTTTTTTTCC..",
+    ".....PPPPPP.....",
+    ".....PPPPPP.....",
+    "....PPP..PPP....",
+    "....PP....PP....",
+    "...KKK....KKK..."
+  ],
+
+  // Trip Mode: Daytime active questing
+  explore: [
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hHSSSSSSHh...",
+    "...hGEGsGEGh....",
+    "...hSGsSSGSh....",
+    "...hBBWWBBBh....",
+    "....hBBBBBh.....",
+    "..OOTTTTTTTT....",
+    "..OOTTTTTTTT....",
+    "..OOTTTTTTTT....",
+    "..K.TTTTTTTT....",
+    ".....PPPPPP.....",
+    ".....PPPPPP.....",
+    "....PPP..PPP....",
+    "....PP....PP....",
+    "...KKK....KKK..."
+  ],
+
+  // Trip Mode: Evening dinner & ramen
+  dining: [
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hHSSSSSSHh...",
+    "...hGEGsGEGh....",
+    "...hSGsSSGSh....",
+    "...hBBWWBBBh....",
+    "....hBBBBBh.....",
+    "....TTTTTTTT.VV.",
+    "...TTTTTTTT.V.V.",
+    "...TTTTTTTT..YY.",
+    "..KRRRRRRRR.....",
+    "....RRRRRR......",
+    ".....PPPPPP.....",
+    ".....PPPPPP.....",
+    "....PPP..PPP....",
+    "...KKK....KKK..."
+  ],
+
+  // Trip Mode: In flight
+  flight: [
+    "................",
+    "..........WW....",
+    ".........WWW....",
+    "........WWWW....",
+    "....WWWWWWWWWW..",
+    "...WWWWWEWWWWW..",
+    "..WWWWWWWWWWWWW.",
+    ".WWWWWWWWWWWWWWW",
+    "..WWWWWWWWWWWWW.",
+    "...WWWWWWWWWWW..",
+    "....WWWWWWWWWW..",
+    "........WWWW....",
+    ".........WWW....",
+    "..........WW....",
+    ".VVVV......VVVV.",
+    "VVVVVVVV..VVVVVV"
+  ],
+
+  // Post-Trip Mode: Safely Home
+  home: [
+    ".....HHHHHH.....",
+    "....FHHHHHHF....",
+    "...hHSSSSSSHh...",
+    "...hGEGsGEGh....",
+    "...hSGsSSGSh....",
+    "...hBBWWBBBh....",
+    "....hBBBBBh.....",
+    "....TTTTTTTT....",
+    "...WTTTTTTTTW...",
+    "...WTTTTTTTTW...",
+    "..K.TTTTTTTT....",
+    ".....PPPPPP.....",
+    ".....PPPPPP.....",
+    "....PPP..PPP....",
+    "....PP....PP....",
+    "...KKK....KKK..."
+  ]
+};
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
