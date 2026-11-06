@@ -71,6 +71,80 @@ function getFlightUrl(now) {
 }
 
 // -------------------------------------------------------------
+// DYNAMIC JST RESOLVER (JOSH STANDARD TIME -> JAPAN STANDARD TIME)
+// -------------------------------------------------------------
+function getJoshTimeZone(now) {
+  let t = now.getTime();
+  // Departure from Houston: Sun Mar 21, 2027 @ 11:10 AM CDT (16:10 UTC)
+  let tOutboundDep = new Date('2027-03-21T11:10:00-05:00').getTime();
+  // Pacific midpoint / Date Line crossing: approx Mar 21 @ 6:00 PM CDT (Mar 22 8:00 AM JST)
+  let tOutboundMid = new Date('2027-03-21T18:00:00-05:00').getTime();
+  // Landing at Tokyo Haneda: Mon Mar 22, 2027 @ 3:25 PM JST (06:25 UTC)
+  let tJapanArrival = new Date('2027-03-22T15:25:00+09:00').getTime();
+  // Departure from Tokyo Haneda: Wed Mar 31, 2027 @ 5:15 PM JST (08:15 UTC / 3:15 AM CDT)
+  let tReturnDep = new Date('2027-03-31T17:15:00+09:00').getTime();
+  // Pacific midpoint return: approx Mar 31 @ 11:00 PM JST (Mar 31 9:00 AM CDT)
+  let tReturnMid = new Date('2027-03-31T09:00:00-05:00').getTime();
+  // Touchdown Chicago ORD: Wed Mar 31, 2027 @ 3:15 PM CDT (20:15 UTC)
+  let tReturnORD = new Date('2027-03-31T15:15:00-05:00').getTime();
+  // Landing Little Rock LIT: Wed Mar 31, 2027 @ 9:54 PM CDT
+  let tHomeArrival = new Date('2027-03-31T21:54:00-05:00').getTime();
+
+  if (t < tOutboundDep) {
+    // Pre-trip: Little Rock, AR
+    return {
+      timeZone: 'America/Chicago',
+      label: 'JST (JOSH)',
+      webTitle: "Josh's Time • JST",
+      webSub: 'Josh Standard Time • Central (Little Rock, AR)',
+      isJapan: false,
+      status: 'pre-trip'
+    };
+  } else if (t < tOutboundMid) {
+    // Flight Leg 1 / early Pacific transit
+    return {
+      timeZone: 'America/Chicago',
+      label: 'JST (FLIGHT)',
+      webTitle: "Josh's Time • JST",
+      webSub: 'Josh Standard Time • In-Flight (Pacific Transit)',
+      isJapan: false,
+      status: 'flight-outbound'
+    };
+  } else if (t < tReturnDep) {
+    // In Japan! (Crossed Pacific / Tokyo / Kyoto / Osaka)
+    return {
+      timeZone: 'Asia/Tokyo',
+      label: 'JST (JAPAN)',
+      webTitle: "Josh's Time • JST",
+      webSub: 'Japan Standard Time • Tokyo (UTC+9)',
+      isJapan: true,
+      status: 'japan'
+    };
+  } else if (t < tReturnMid) {
+    // Return flight early transpacific transit
+    return {
+      timeZone: 'Asia/Tokyo',
+      label: 'JST (FLIGHT)',
+      webTitle: "Josh's Time • JST",
+      webSub: 'Josh Standard Time • In-Flight Return',
+      isJapan: false,
+      status: 'flight-return'
+    };
+  } else {
+    // Return to US airspace / Little Rock Home
+    return {
+      timeZone: 'America/Chicago',
+      label: 'JST (HOME)',
+      webTitle: "Josh's Time • JST",
+      webSub: 'Josh Standard Time • Central (Safely Home)',
+      isJapan: false,
+      status: 'home'
+    };
+  }
+}
+
+
+// -------------------------------------------------------------
 // VERIFIED MASTER FLIGHT DATA (100% ACCURATE FROM RESERVATION)
 // -------------------------------------------------------------
 const FLIGHT_RESERVATION = {
@@ -641,10 +715,11 @@ async function makeWidget(family = "medium") {
   bg.colors = [new Color("#0f172a"), new Color("#090d16")];
   w.backgroundGradient = bg;
 
-  // Time calculations
-  let tyoTime = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Tokyo', hour: 'numeric', minute: '2-digit' }).format(now);
+  // Dynamic JST & Local Time Resolution (Josh Standard Time vs Japan Standard Time)
+  let joshZone = getJoshTimeZone(now);
+  let joshTime = new Intl.DateTimeFormat('en-US', { timeZone: joshZone.timeZone, hour: 'numeric', minute: '2-digit' }).format(now);
   let localTime = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(now);
-  let tyoHour = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Tokyo', hour: 'numeric', hour12: false }).format(now), 10);
+  let joshHour = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: joshZone.timeZone, hour: 'numeric', hour12: false }).format(now), 10);
 
   // Trip Dates
   let departureDate = new Date("2027-03-21T07:00:00-05:00");
@@ -676,21 +751,21 @@ async function makeWidget(family = "medium") {
       text: "Cruising at 35,000 ft • Flight Mode",
       color: "#60a5fa"
     };
-  } else if (tyoHour >= 23 || tyoHour < 7) {
+  } else if (joshHour >= 23 || joshHour < 7) {
     contactStatus = {
       key: "sleep",
       badge: "🛌 SLEEP MODE 💤",
       text: "Late night in Japan • Do not disturb",
       color: "#c084fc"
     };
-  } else if (tyoHour >= 7 && tyoHour < 9) {
+  } else if (joshHour >= 7 && joshHour < 9) {
     contactStatus = {
       key: "morning",
       badge: "☕ MORNING FUEL",
       text: "Waking up & breakfast • Good time to text",
       color: "#ffd166"
     };
-  } else if (tyoHour >= 18 && tyoHour < 23) {
+  } else if (joshHour >= 18 && joshHour < 23) {
     contactStatus = {
       key: "dining",
       badge: "🍜 DINING & RAMEN",
@@ -763,7 +838,7 @@ async function makeWidget(family = "medium") {
     cBadge.textColor = new Color(contactStatus.color);
     cBadge.minimumScaleFactor = 0.85;
 
-    let cNote = cInfo.addText(isPreTrip ? (diffDays + "d to takeoff") : (tyoHour >= 23 || tyoHour < 7 ? "Sleeping in JST" : "Active in Tokyo"));
+    let cNote = cInfo.addText(isPreTrip ? (diffDays + "d to takeoff") : (joshHour >= 23 || joshHour < 7 ? "Sleeping in JST" : "Active in Tokyo"));
     cNote.font = Font.mediumSystemFont(8);
     cNote.textColor = new Color("#cbd5e1");
     cNote.lineLimit = 1;
@@ -781,7 +856,7 @@ async function makeWidget(family = "medium") {
 
     left.addSpacer(7);
 
-    // 3. Compact Dual Clocks (Tokyo JST vs Local Time)
+    // 3. Compact Dual Clocks (Josh JST vs Local Time)
     let clockBox = left.addStack();
     clockBox.layoutVertically();
     clockBox.backgroundColor = new Color("#131a29", 0.85);
@@ -790,11 +865,11 @@ async function makeWidget(family = "medium") {
 
     let jstRow = clockBox.addStack();
     jstRow.layoutHorizontally();
-    let jstLbl = jstRow.addText("JAPAN (JST)");
+    let jstLbl = jstRow.addText(joshZone.label);
     jstLbl.font = Font.boldSystemFont(8);
     jstLbl.textColor = new Color("#94a3b8");
     jstRow.addSpacer();
-    let jstVal = jstRow.addText(tyoTime);
+    let jstVal = jstRow.addText(joshTime);
     jstVal.font = Font.boldSystemFont(9.5);
     jstVal.textColor = new Color("#ffd166");
 
@@ -904,35 +979,45 @@ async function makeWidget(family = "medium") {
 
     // 3a. Emergency Hub (Opens Emergency Info Sheet)
     let btnEmerg = bRow.addStack();
+    btnEmerg.layoutHorizontally();
+    btnEmerg.centerAlignContent();
     btnEmerg.backgroundColor = new Color("#2d1217");
     btnEmerg.borderColor = new Color("#ef4444", 0.55);
     btnEmerg.borderWidth = 1;
     btnEmerg.cornerRadius = 6;
-    btnEmerg.setPadding(6, 9, 6, 9);
+    btnEmerg.setPadding(5, 6, 5, 6);
     btnEmerg.url = getActionUrl("emergency");
+    btnEmerg.addSpacer();
     let mEmergTxt = btnEmerg.addText("🚨 Emergency Hub");
-    mEmergTxt.font = Font.boldSystemFont(8.5);
+    mEmergTxt.font = Font.boldSystemFont(8);
     mEmergTxt.textColor = new Color("#fca5a5");
-    mEmergTxt.minimumScaleFactor = 0.85;
+    mEmergTxt.lineLimit = 1;
+    mEmergTxt.minimumScaleFactor = 0.75;
     mEmergTxt.url = getActionUrl("emergency");
+    btnEmerg.addSpacer();
 
     bRow.addSpacer(6);
 
     // 3b. Live Flight Tracker on FlightAware (Opens in default browser)
     let flightTracker = getActiveFlightTracker(now);
     let btnFlights = bRow.addStack();
+    btnFlights.layoutHorizontally();
+    btnFlights.centerAlignContent();
     btnFlights.backgroundColor = new Color("#1e3a5f");
     btnFlights.borderWidth = 1;
     btnFlights.borderColor = new Color("#3b82f6", 0.4);
     btnFlights.cornerRadius = 6;
-    btnFlights.setPadding(6, 9, 6, 9);
+    btnFlights.setPadding(5, 6, 5, 6);
     btnFlights.url = getFlightUrl(now);
+    btnFlights.addSpacer();
     let flightBtnLabel = "✈️ Flight Tracker";
     let mFlightTxt = btnFlights.addText(flightBtnLabel);
-    mFlightTxt.font = Font.boldSystemFont(8.5);
+    mFlightTxt.font = Font.boldSystemFont(8);
     mFlightTxt.textColor = new Color("#93c5fd");
-    mFlightTxt.minimumScaleFactor = 0.85;
+    mFlightTxt.lineLimit = 1;
+    mFlightTxt.minimumScaleFactor = 0.75;
     mFlightTxt.url = getFlightUrl(now);
+    btnFlights.addSpacer();
     return w;
   }
 // -------------------------------------------------------------
@@ -959,7 +1044,7 @@ async function makeWidget(family = "medium") {
   let hRight = r1.addStack();
   hRight.layoutVertically();
 
-  let clockTxt = hRight.addText("JAPAN: " + tyoTime);
+  let clockTxt = hRight.addText(joshZone.label + ": " + joshTime);
   clockTxt.font = Font.boldSystemFont(11);
   clockTxt.textColor = new Color("#ffd166");
   clockTxt.rightAlignText();

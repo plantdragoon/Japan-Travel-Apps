@@ -244,12 +244,14 @@
     <div class="status-bar">
       <div class="clock-row">
         <div class="clock-col">
-          <div class="clock-label">Josh's Time (Japan JST)</div>
+          <div class="clock-label" id="joshClockLabel">Josh's Time • JST</div>
           <div class="clock-time jp" id="japanTime">--:-- --</div>
+          <div class="clock-sub" id="joshClockSub" style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Josh Standard Time • Central</div>
         </div>
         <div class="clock-col right">
           <div class="clock-label">Your Local Time</div>
           <div class="clock-time" id="localTime">--:-- --</div>
+          <div class="clock-sub" id="userClockSub" style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Viewer Device Time</div>
         </div>
       </div>
 
@@ -872,14 +874,78 @@
       }
     };
 
+    function getJoshTimeZone(now) {
+      const t = now.getTime();
+      const tOutboundDep = new Date("2027-03-21T11:10:00-05:00").getTime();
+      const tOutboundMid = new Date("2027-03-21T18:00:00-05:00").getTime();
+      const tJapanArrival = new Date("2027-03-22T15:25:00+09:00").getTime();
+      const tReturnDep = new Date("2027-03-31T17:15:00+09:00").getTime();
+      const tReturnMid = new Date("2027-03-31T09:00:00-05:00").getTime();
+      const tHomeArrival = new Date("2027-03-31T21:54:00-05:00").getTime();
+
+      if (t < tOutboundDep) {
+        return {
+          timeZone: "America/Chicago",
+          label: "JST (JOSH)",
+          clockTitle: "Josh's Time • JST",
+          subLabel: "Josh Standard Time • Central (Little Rock, AR)",
+          isJapan: false,
+          status: "pre-trip"
+        };
+      } else if (t < tOutboundMid) {
+        return {
+          timeZone: "America/Chicago",
+          label: "JST (FLIGHT)",
+          clockTitle: "Josh's Time • JST",
+          subLabel: "Josh Standard Time • In-Flight (Pacific Transit)",
+          isJapan: false,
+          status: "flight-outbound"
+        };
+      } else if (t < tReturnDep) {
+        return {
+          timeZone: "Asia/Tokyo",
+          label: "JST (JAPAN)",
+          clockTitle: "Josh's Time • JST",
+          subLabel: "Japan Standard Time • Tokyo (UTC+9)",
+          isJapan: true,
+          status: "japan"
+        };
+      } else if (t < tReturnMid) {
+        return {
+          timeZone: "Asia/Tokyo",
+          label: "JST (FLIGHT)",
+          clockTitle: "Josh's Time • JST",
+          subLabel: "Josh Standard Time • In-Flight Return",
+          isJapan: false,
+          status: "flight-return"
+        };
+      } else {
+        return {
+          timeZone: "America/Chicago",
+          label: "JST (HOME)",
+          clockTitle: "Josh's Time • JST",
+          subLabel: "Josh Standard Time • Central (Safely Home)",
+          isJapan: false,
+          status: "home"
+        };
+      }
+    }
+
     function updateClocks() {
       const now = new Date();
+      const joshZone = getJoshTimeZone(now);
       
-      // Japan Time
-      const jpTimeStr = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'Asia/Tokyo', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true
+      // Josh's JST Time
+      const joshTimeStr = new Intl.DateTimeFormat('en-US', {
+        timeZone: joshZone.timeZone, hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true
       }).format(now);
-      document.getElementById('japanTime').innerText = jpTimeStr;
+      document.getElementById('japanTime').innerText = joshTimeStr;
+      if (document.getElementById('joshClockLabel')) {
+        document.getElementById('joshClockLabel').innerText = joshZone.clockTitle;
+      }
+      if (document.getElementById('joshClockSub')) {
+        document.getElementById('joshClockSub').innerText = joshZone.subLabel;
+      }
 
       // Local Time
       const localTimeStr = new Intl.DateTimeFormat('en-US', {
@@ -904,7 +970,7 @@
 
       // Real-time JST Hour & Date Check
       const jpHour = parseInt(new Intl.DateTimeFormat('en-US', {
-        timeZone: 'Asia/Tokyo', hour: 'numeric', hour12: false
+        timeZone: joshZone.timeZone, hour: 'numeric', hour12: false
       }).format(now), 10);
 
       const jstDateStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(now);
@@ -913,7 +979,7 @@
       if (isFlight) {
         applyPixelState("flight", "Josh is in transit / flight mode crossing time zones!", "✈️ PIXEL JOSH: SKY TRANSIT", "In-Flight over Pacific", "#60a5fa");
       } else if (jpHour >= 23 || jpHour < 7) {
-        applyPixelState("sleep", "Josh is likely fast asleep in his hotel. (Do Not Disturb)", "🛌 PIXEL JOSH: SLEEP MODE 💤", "Late night in Japan (" + jpTimeStr + ")", "#c084fc");
+        applyPixelState("sleep", "Josh is likely fast asleep in his hotel. (Do Not Disturb)", "🛌 PIXEL JOSH: SLEEP MODE 💤", "Late night in Japan (" + joshTimeStr + ")", "#c084fc");
       } else if (jpHour >= 7 && jpHour < 9) {
         applyPixelState("morning", "Josh is waking up, enjoying breakfast & getting coffee!", "☕ PIXEL JOSH: MORNING FUEL", "Morning prep in Japan", "#ffd166");
       } else if (jpHour >= 9 && jpHour < 18) {
