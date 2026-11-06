@@ -722,11 +722,13 @@ async function makeWidget(family = "medium") {
     let titleTxt = left.addText("WHERE'S JOSH? 🇯🇵");
     titleTxt.font = Font.heavySystemFont(9);
     titleTxt.textColor = new Color("#94a3b8");
+    titleTxt.minimumScaleFactor = 0.85;
 
     let cityTxt = left.addText(info.city.toUpperCase());
     cityTxt.font = Font.heavySystemFont(14.5);
     cityTxt.textColor = Color.white();
     cityTxt.lineLimit = 1;
+    cityTxt.minimumScaleFactor = 0.85;
 
     left.addSpacer(7);
 
@@ -752,11 +754,13 @@ async function makeWidget(family = "medium") {
     let cBadge = cInfo.addText(contactStatus.badge);
     cBadge.font = Font.heavySystemFont(8.5);
     cBadge.textColor = new Color(contactStatus.color);
+    cBadge.minimumScaleFactor = 0.85;
 
     let cNote = cInfo.addText(isPreTrip ? (diffDays + "d to takeoff") : (tyoHour >= 23 || tyoHour < 7 ? "Sleeping in JST" : "Active in Tokyo"));
     cNote.font = Font.mediumSystemFont(8);
     cNote.textColor = new Color("#cbd5e1");
     cNote.lineLimit = 1;
+    cNote.minimumScaleFactor = 0.85;
 
     cBar.addSpacer();
 
@@ -838,7 +842,8 @@ async function makeWidget(family = "medium") {
     let fBlurb = fCard.addText(info.statusSummary);
     fBlurb.font = Font.mediumSystemFont(9.5);
     fBlurb.textColor = Color.white();
-    fBlurb.lineLimit = 2;
+    fBlurb.lineLimit = 3;
+    fBlurb.minimumScaleFactor = 0.8;
     fBlurb.url = getActionUrl("timeline");
 
     right.addSpacer(7);
@@ -869,6 +874,7 @@ async function makeWidget(family = "medium") {
     hName.font = Font.boldSystemFont(9);
     hName.textColor = new Color("#f1f5f9");
     hName.lineLimit = 1;
+    hName.minimumScaleFactor = 0.8;
     hName.url = getActionUrl("hotel");
 
     hBox.addSpacer();
@@ -900,6 +906,7 @@ async function makeWidget(family = "medium") {
     let mEmergTxt = btnEmerg.addText("🚨 Emergency Hub");
     mEmergTxt.font = Font.boldSystemFont(8.5);
     mEmergTxt.textColor = new Color("#fca5a5");
+    mEmergTxt.minimumScaleFactor = 0.85;
     mEmergTxt.url = getActionUrl("emergency");
 
     bRow.addSpacer(6);
@@ -917,6 +924,7 @@ async function makeWidget(family = "medium") {
     let mFlightTxt = btnFlights.addText(flightBtnLabel);
     mFlightTxt.font = Font.boldSystemFont(8.5);
     mFlightTxt.textColor = new Color("#93c5fd");
+    mFlightTxt.minimumScaleFactor = 0.85;
     mFlightTxt.url = getFlightUrl(now);
     return w;
   }
@@ -1026,9 +1034,10 @@ async function makeWidget(family = "medium") {
   fCard.addSpacer(3);
 
   let fBlurb = fCard.addText(info.statusSummary);
-  fBlurb.font = Font.mediumSystemFont(11);
+  fBlurb.font = Font.mediumSystemFont(10.5);
   fBlurb.textColor = Color.white();
-  fBlurb.lineLimit = 3;
+  fBlurb.lineLimit = 4;
+  fBlurb.minimumScaleFactor = 0.85;
   fBlurb.url = getActionUrl("timeline");
 
   w.addSpacer(8);
@@ -1111,13 +1120,14 @@ async function loadCurrentStatus() {
   // Pre-trip mode
   if (diffDays > 0) {
     return {
-      city: "Tokyo Ready",
+      city: "Pre-Trip",
       stageLabel: diffDays + "d to takeoff",
-      mapQuery: "Hotel Groove Shinjuku",
-      statusSummary: `Josh's 10-day Japan adventure kicks off in ${diffDays} days! Departures Sunday, March 21 on United & ANA via Houston (IAH) to Tokyo Haneda.`,
-      todaysFocus: "Packing gear, finalizing reservations, and counting down to Tokyo departure.",
+      mapQuery: "Citadines Shinjuku Tokyo",
+      statusSummary: "Once Josh departs on March 21, this dynamic tracker will update in real-time to show where Josh is and what he's doing at every moment according to his itinerary!",
+      todaysFocus: "Pre-trip packing & preparations. Tap Tour for the complete 10-day itinerary.",
       hotel: {
-        name: "Citadines Shinjuku Tokyo (Arrival Night)",
+        name: "Citadines Shinjuku",
+        fullName: "Citadines Shinjuku Tokyo (Arrival Night)",
         address: "1-28-13 Shinjuku, Shinjuku City, Tokyo 160-0022",
         addressJa: "東京都新宿区新宿1-28-13",
         phone: "+81 3-5379-7208"
