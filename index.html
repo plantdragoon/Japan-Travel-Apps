@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Where's Josh? 🇯🇵 • Japan Travel Tracker</title>
   <style>
+    html { scroll-behavior: smooth; }
     :root {
       --bg: #090d16;
       --card-bg: #131b29;
@@ -172,7 +173,7 @@
     .btn:active { transform: scale(0.98); }
 
     /* Cards */
-    .card {
+    .card { scroll-margin-top: 20px;
       background: var(--card-bg); border: 1px solid var(--border);
       border-radius: 14px; padding: 16px; margin-bottom: 14px;
     }
@@ -502,7 +503,7 @@
     </div>
 
     <!-- Interactive Day Navigator -->
-    <div class="card">
+    <div class="card" id="timelineSection">
       <div class="card-header">
         <span style="font-size: 16px;">📅</span>
         <span class="card-title">10-Day Trip Timeline (Tap Any Day)</span>
