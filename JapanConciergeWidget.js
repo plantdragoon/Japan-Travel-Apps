@@ -2,9 +2,11 @@
 // Fully Dynamic Architecture: Auto-Syncs Products, Action Milestones, Emergency Hub, Contextual Phrases & Taxi Flashcards directly from Google Docs
 // With Gemini 3.5 Flash Dynamic Engine, Brave Browser Deep-Linking, Dual Clock, Suica / Apple Wallet & Live Yen
 
-const DOC_ID = "1dltC4Y9atYSscR9F03vlBoVteiXq8Qr7ptwv4NAqeGg";
-const DOC_URL = `https://docs.google.com/document/d/${DOC_ID}/edit`;
-const GEMINI_KEY = "AQ.Ab8RN6Ji8DWrmv3rrNQc2nXOVsmNCpZ8qqH7tKr7CldaxD3z1Q";
+// Secure Credentials: Loaded locally from iOS Keychain if configured on your phone,
+// keeping your secret keys and travel doc 100% private and off public GitHub.
+const DOC_ID = (typeof Keychain !== "undefined" && Keychain.contains("DOC_ID")) ? Keychain.get("DOC_ID") : "";
+const DOC_URL = DOC_ID ? `https://docs.google.com/document/d/${DOC_ID}/edit` : "";
+const GEMINI_KEY = (typeof Keychain !== "undefined" && Keychain.contains("GEMINI_KEY")) ? Keychain.get("GEMINI_KEY") : "";
 
 // Browser Preference: Routes web links directly into Brave iOS app
 const PREFER_BRAVE = true;
