@@ -993,14 +993,14 @@ async function makeWidget(family = "medium") {
     btnEmerg.borderColor = new Color("#ef4444", 0.55);
     btnEmerg.borderWidth = 1;
     btnEmerg.cornerRadius = 6;
-    btnEmerg.setPadding(5, 6, 5, 6);
+    btnEmerg.setPadding(5, 5, 5, 5);
     btnEmerg.url = getActionUrl("emergency");
     btnEmerg.addSpacer();
     let mEmergTxt = btnEmerg.addText("🚨 Emergency");
     mEmergTxt.font = Font.boldSystemFont(8);
     mEmergTxt.textColor = new Color("#fca5a5");
     mEmergTxt.lineLimit = 1;
-    mEmergTxt.minimumScaleFactor = 0.75;
+    mEmergTxt.minimumScaleFactor = 0.65;
     mEmergTxt.url = getActionUrl("emergency");
     btnEmerg.addSpacer();
 
@@ -1015,15 +1015,15 @@ async function makeWidget(family = "medium") {
     btnFlights.borderWidth = 1;
     btnFlights.borderColor = new Color("#3b82f6", 0.4);
     btnFlights.cornerRadius = 6;
-    btnFlights.setPadding(5, 6, 5, 6);
+    btnFlights.setPadding(5, 5, 5, 5);
     btnFlights.url = getFlightUrl(now);
     btnFlights.addSpacer();
-    let flightBtnLabel = "✈️ Live Flights";
+    let flightBtnLabel = "✈️ Flights";
     let mFlightTxt = btnFlights.addText(flightBtnLabel);
     mFlightTxt.font = Font.boldSystemFont(8);
     mFlightTxt.textColor = new Color("#93c5fd");
     mFlightTxt.lineLimit = 1;
-    mFlightTxt.minimumScaleFactor = 0.75;
+    mFlightTxt.minimumScaleFactor = 0.65;
     mFlightTxt.url = getFlightUrl(now);
     btnFlights.addSpacer();
     return w;
