@@ -6,6 +6,9 @@
 // -------------------------------------------------------------
 // USER CONFIGURATION & PREFERENCES
 // -------------------------------------------------------------
+// Live Web Dashboard URL (GitHub Pages travel tracker)
+const WEB_DASHBOARD_URL = "https://plantdragoon.github.io/Japan-Travel-Apps/";
+
 // Flight Tracker Provider: "flightaware" (Live radar tracking) | "google" (Google Flight Status)
 const FLIGHT_TRACKER_MODE = "flightaware";
 
@@ -677,13 +680,17 @@ if (config.runsInWidget) {
 } else if (action === "flights") {
   await showFlightsSheet();
   Script.complete();
+} else if (action === "url" || action === "dashboard" || action === "web") {
+  Safari.open(WEB_DASHBOARD_URL);
+  Script.complete();
 } else {
   // If run directly inside Scriptable app without an action (e.g. pressing Play in editor)
   let menu = new Alert();
   menu.title = "Where's Josh? • Japan Tracker";
   menu.message = "Choose an option to preview:";
+  menu.addAction("🌐 Open Live Web Dashboard (GitHub Pages)");
   menu.addAction("📅 View Full 10-Day Trip Itinerary");
-  menu.addAction("🏨 View Current Hotel Basecamp");
+  menu.addAction("🏨 View Hotel Basecamp (Little Rock / Japan)");
   menu.addAction("🚨 View Emergency & Insurance Hub");
   menu.addAction("✈️ View Accurate Flights & Live Trackers");
   menu.addAction("📱 Preview Medium Widget (Home Screen)");
@@ -691,19 +698,21 @@ if (config.runsInWidget) {
   menu.addCancelAction("Cancel");
   let res = await menu.presentAlert();
   if (res === 0) {
-    await showTimelineSheet();
+    Safari.open(WEB_DASHBOARD_URL);
   } else if (res === 1) {
-    let info = await loadCurrentStatus();
-    await showHotelSheet(info);
+    await showTimelineSheet();
   } else if (res === 2) {
     let info = await loadCurrentStatus();
-    await showEmergencySheet(info);
+    await showHotelSheet(info);
   } else if (res === 3) {
-    await showFlightsSheet();
+    let info = await loadCurrentStatus();
+    await showEmergencySheet(info);
   } else if (res === 4) {
+    await showFlightsSheet();
+  } else if (res === 5) {
     let w = await makeWidget("medium");
     await w.presentMedium();
-  } else if (res === 5) {
+  } else if (res === 6) {
     let w = await makeWidget("large");
     await w.presentLarge();
   }
@@ -715,6 +724,7 @@ if (config.runsInWidget) {
 // -------------------------------------------------------------
 async function makeWidget(family = "medium") {
   let w = new ListWidget();
+  w.url = WEB_DASHBOARD_URL;
   let now = new Date();
   w.refreshAfterDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1, 0, 5);
 
@@ -810,7 +820,7 @@ async function makeWidget(family = "medium") {
   // -------------------------------------------------------------
   if (family !== "large") {
     w.setPadding(13, 14, 13, 14);
-    w.url = getActionUrl("timeline");
+    w.url = WEB_DASHBOARD_URL;
 
     let root = w.addStack();
     root.layoutHorizontally();
@@ -953,6 +963,7 @@ async function makeWidget(family = "medium") {
     right.addSpacer(7);
 
     // 2. Combined Hotel Basecamp Card & Button (Directly opens Hotel Card Sheet)
+    let isHome = (info.hotel.phone === "N/A" || info.hotel.name.includes("Little Rock"));
     let hBox = right.addStack();
     hBox.layoutHorizontally();
     hBox.backgroundColor = new Color("#131a29");
@@ -962,14 +973,14 @@ async function makeWidget(family = "medium") {
     hBox.setPadding(6, 9, 6, 9);
     hBox.url = getActionUrl("hotel");
 
-    let hIcon = hBox.addText("🏨 ");
+    let hIcon = hBox.addText(isHome ? "🏡 " : "🏨 ");
     hIcon.font = Font.systemFont(9);
 
     let hInfo = hBox.addStack();
     hInfo.layoutVertically();
     hInfo.url = getActionUrl("hotel");
 
-    let hLabel = hInfo.addText("HOTEL BASECAMP");
+    let hLabel = hInfo.addText(isHome ? "HOME BASECAMP" : "HOTEL BASECAMP");
     hLabel.font = Font.heavySystemFont(7);
     hLabel.textColor = new Color("#ffd166");
     hLabel.url = getActionUrl("hotel");
@@ -1119,8 +1130,6 @@ async function makeWidget(family = "medium") {
   w.addSpacer(8);
 
   // Row 3: Status & Itinerary Focus Card (Tap opens Full Timeline)
-  w.url = getActionUrl("timeline");
-
   let fCard = w.addStack();
   fCard.layoutVertically();
   fCard.backgroundColor = new Color("#162032");
@@ -1157,6 +1166,7 @@ async function makeWidget(family = "medium") {
   w.addSpacer(8);
 
   // Row 4: Hotel Basecamp Quick Pill (Tap opens Hotel Card)
+  let isHomeLrg = (info.hotel.phone === "N/A" || info.hotel.name.includes("Little Rock"));
   let hBox = w.addStack();
   hBox.layoutHorizontally();
   hBox.backgroundColor = new Color("#131a29");
@@ -1164,10 +1174,10 @@ async function makeWidget(family = "medium") {
   hBox.setPadding(6, 10, 6, 10);
   hBox.url = getActionUrl("hotel");
 
-  let hIcon = hBox.addText("🏨 ");
+  let hIcon = hBox.addText(isHomeLrg ? "🏡 " : "🏨 ");
   hIcon.font = Font.systemFont(10);
 
-  let hName = hBox.addText(info.hotel.name);
+  let hName = hBox.addText(isHomeLrg ? "Home Base: Little Rock, AR" : info.hotel.name);
   hName.font = Font.boldSystemFont(10);
   hName.textColor = new Color("#e2e8f0");
   hName.lineLimit = 1;
@@ -1175,7 +1185,7 @@ async function makeWidget(family = "medium") {
 
   hBox.addSpacer();
 
-  let hPhone = hBox.addText("View Hotel ↗");
+  let hPhone = hBox.addText(isHomeLrg ? "Base Info ↗" : "View Hotel ↗");
   hPhone.font = Font.semiboldSystemFont(9);
   hPhone.textColor = new Color("#ffd166");
   hPhone.url = getActionUrl("hotel");
@@ -1236,16 +1246,17 @@ async function loadCurrentStatus() {
     return {
       city: "Pre-Trip",
       stageLabel: diffDays + "d to takeoff",
-      mapQuery: "Citadines Shinjuku Tokyo",
+      mapQuery: "Little Rock, AR",
       statusSummary: "Once Josh departs on March 21, this dynamic tracker will update in real-time to show where Josh is and what he's doing at every moment according to his itinerary!",
       mediumSummary: "Live tracking activates March 21 at takeoff! Tap Tour ↗ for the complete 10-day trip itinerary.",
-      todaysFocus: "Pre-trip packing & preparations. Tap Tour for the complete 10-day itinerary.",
+      todaysFocus: "Pre-trip packing & preparations in Little Rock. Tap Tour for the complete 10-day itinerary.",
       hotel: {
-        name: "Citadines Shinjuku",
-        fullName: "Citadines Shinjuku Tokyo (Arrival Night)",
-        address: "1-28-13 Shinjuku, Shinjuku City, Tokyo 160-0022",
-        addressJa: "東京都新宿区新宿1-28-13",
-        phone: "+81 3-5379-7208"
+        name: "Little Rock, AR",
+        fullName: "Home Base • Little Rock, Arkansas",
+        address: "Little Rock, AR, USA (Pre-Trip Preparation)",
+        addressJa: "アメリカ合衆国 アーカンソー州リトルロック (出発前)",
+        phone: "N/A",
+        note: "Josh has not departed for Japan yet! Flight takeoff is scheduled for March 21, 2027. First hotel basecamp in Tokyo will be Citadines Shinjuku Tokyo upon arrival."
       },
       isFlightDay: false
     };
@@ -1276,10 +1287,12 @@ async function loadCurrentStatus() {
       mediumSummary: "Josh returned safely home to Little Rock! Tap Tour ↗ to review memories.",
       todaysFocus: "Unpacking souvenirs, settling back in, and recovering from transpacific jet lag.",
       hotel: {
-        name: "Home Sweet Home (USA)",
-        address: "Little Rock, AR",
-        addressJa: "アメリカ合衆国 アーカンソー州リトルロック",
-        phone: "N/A"
+        name: "Little Rock, AR",
+        fullName: "Home Base • Little Rock, Arkansas",
+        address: "Little Rock, AR, USA (Trip Completed)",
+        addressJa: "アメリカ合衆国 アーカンソー州リトルロック (帰国済)",
+        phone: "N/A",
+        note: "Josh has returned safely home from Japan!"
       },
       isFlightDay: false
     };
@@ -1583,16 +1596,17 @@ async function showHotelSheet(info) {
     </head>
     <body>
       <div class="header">
-        <span class="badge">🏨 Accommodations Basecamp</span>
-        <h1 class="title">Current Hotel Base</h1>
-        <div class="subtitle">Where Josh is staying in Japan</div>
+        <span class="badge">${(info.hotel.phone === "N/A" || info.hotel.name.includes("Little Rock")) ? "🏡 Home Basecamp" : "🏨 Accommodations Basecamp"}</span>
+        <h1 class="title">${info.hotel.fullName || info.hotel.name}</h1>
+        <div class="subtitle">${(info.hotel.phone === "N/A" || info.hotel.name.includes("Little Rock")) ? "Josh is currently home in Arkansas (Signifies he hasn't departed yet!)" : "Where Josh is staying in Japan"}</div>
       </div>
 
       <div class="card" style="border-color: rgba(255, 209, 102, 0.4);">
-        <div class="card-title">Active Accommodations</div>
+        <div class="card-title">${(info.hotel.phone === "N/A" || info.hotel.name.includes("Little Rock")) ? "Active Basecamp" : "Active Accommodations"}</div>
         <div class="hotel-name">${info.hotel.name}</div>
         <div class="hotel-addr">${info.hotel.address}</div>
-        ${info.hotel.addressJa ? `<div class="hotel-ja">🇯🇵 ${info.hotel.addressJa}</div>` : ""}
+        ${info.hotel.addressJa ? `<div class="hotel-ja">${info.hotel.addressJa}</div>` : ""}
+        ${info.hotel.note ? `<div style="font-size: 12px; color: #ffd166; margin-top: 8px; line-height: 1.45;">${info.hotel.note}</div>` : ""}
         
         <div class="actions-row">
           <a class="btn btn-blue" href="https://maps.apple.com/?q=${encodeURIComponent(info.hotel.name + " " + info.hotel.address)}">🗺️ Open in Apple Maps</a>
@@ -1707,6 +1721,10 @@ async function showTimelineSheet() {
       </div>
 
       ${daysHtml}
+
+      <div style="text-align: center; margin: 24px 0 10px 0;">
+        <a href="${WEB_DASHBOARD_URL}" style="display: inline-block; background: #2563eb; color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 700; padding: 10px 18px; border-radius: 8px; box-shadow: 0 2px 8px rgba(37,99,235,0.4);">🌐 Open Live Web Tracker Dashboard ↗</a>
+      </div>
 
       <div class="footer-note">
         Follow along each day as Josh travels through Japan.<br>
