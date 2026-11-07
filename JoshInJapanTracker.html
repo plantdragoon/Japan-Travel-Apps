@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Where's Josh? 🇯🇵 • Japan Travel Tracker</title>
+  <style>
+    html { scroll-behavior: smooth; }
+    :root {
+      --bg: #090d16;
+      --card-bg: #131b29;
+      --border: #1f2a3f;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #ffd166;
+      --blue: #3b82f6;
+      --blue-subtle: rgba(59, 130, 246, 0.15);
+      --green: #10b981;
+      --red: #ef4444;
+      --red-subtle: rgba(239, 68, 68, 0.15);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px 16px 60px 16px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 600px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255, 209, 102, 0.15); color: var(--accent);
+      border: 1px solid rgba(255, 209, 102, 0.35); border-radius: 999px;
+      padding: 4px 12px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .title { font-size: 32px; font-weight: 900; margin: 0 0 6px 0; letter-spacing: -0.5px; color: #ffffff; }
+    .subtitle { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+    /* Dual Clock & Pixel Status Bar */
+    .status-bar {
+      background: #111726; border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 16px; margin-bottom: 16px;
+    }
+    .clock-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; }
+    .clock-col { flex: 1; }
+    .clock-col.right { text-align: right; }
+    .clock-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .clock-time { font-size: 20px; font-weight: 800; color: #ffffff; margin-top: 2px; }
+    .clock-time.jp { color: var(--accent); }
+    
+    /* 8-Bit Pixel Character Card */
+    .pixel-card {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(22, 32, 50, 0.85); border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 12px; padding: 10px 12px; margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+    .pixel-avatar-box {
+      width: 52px; height: 52px; flex-shrink: 0;
+      background: #0a0f1d; border: 1px solid #25334d;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .pixel-info { flex: 1; min-width: 0; }
+    .pixel-badge {
+      font-size: 11px; font-weight: 800; color: var(--accent);
+      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .pixel-desc { font-size: 12px; font-weight: 600; color: #ffffff; line-height: 1.35; }
+    .pixel-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .pixel-text-btn {
+      background: #1e3a5f; color: #93c5fd; text-decoration: none;
+      font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 6px;
+      white-space: nowrap; flex-shrink: 0; border: 1px solid rgba(147, 197, 253, 0.3);
+    }
+    .pixel-text-btn:active { transform: scale(0.96); }
+
+    /* Interactive Preview Pills */
+    .pixel-preview-row {
+      display: flex; align-items: center; gap: 6px; overflow-x: auto;
+      padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 8px;
+    }
+    .preview-label { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .preview-pill {
+      background: #151e2e; border: 1px solid #233148; color: #94a3b8;
+      border-radius: 6px; padding: 3px 7px; font-size: 10px; font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    }
+    .preview-pill:hover, .preview-pill.active {
+      background: #2563eb; color: #ffffff; border-color: #3b82f6;
+    }
+
+    /* Enhanced Fun & Off-Beat Sprite Animations */
+    @keyframes pixelBreathe {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(1.5px); }
+    }
+    @keyframes sleepSnore {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.05, 0.95) translateY(1.5px); }
+    }
+    @keyframes snoreBubble {
+      0% { opacity: 0; transform: scale(0.3) translate(0, 0); }
+      50% { opacity: 0.9; transform: scale(1.2) translate(3px, -6px); }
+      85% { opacity: 1; transform: scale(1.4) translate(5px, -12px); }
+      100% { opacity: 0; transform: scale(1.6) translate(6px, -16px); }
+    }
+    @keyframes floatZzz1 {
+      0% { opacity: 0; transform: translateY(4px) translateX(0) scale(0.6); }
+      40% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-18px) translateX(8px) scale(1.1); }
+    }
+    @keyframes floatZzz2 {
+      0% { opacity: 0; transform: translateY(4px) translateX(0) scale(0.6); }
+      40% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-22px) translateX(12px) scale(1.3); }
+    }
+    @keyframes floatZzz3 {
+      0% { opacity: 0; transform: translateY(4px) translateX(0) scale(0.5); }
+      40% { opacity: 0.9; }
+      100% { opacity: 0; transform: translateY(-26px) translateX(15px) scale(1.4); }
+    }
+    @keyframes caffeineJitter {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-1.5px, 0.5px); }
+      40% { transform: translate(1.5px, -1px); }
+      60% { transform: translate(-1px, -1px); }
+      80% { transform: translate(1px, 1px); }
+      100% { transform: translate(0, 0); }
+    }
+    @keyframes sparkPop {
+      0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
+      50% { opacity: 1; transform: scale(1.3) rotate(35deg); }
+    }
+    @keyframes steamRise {
+      0% { opacity: 0; transform: translateY(4px) scale(0.7); }
+      50% { opacity: 0.9; }
+      100% { opacity: 0; transform: translateY(-14px) translateX(3px) scale(1.2); }
+    }
+    @keyframes heroStrut {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-3.5px) rotate(3deg); }
+      50% { transform: translateY(0) rotate(0deg); }
+      75% { transform: translateY(-3.5px) rotate(-3deg); }
+    }
+    @keyframes dustPuff {
+      0% { opacity: 0.9; transform: scale(0.4) translate(0, 0); }
+      100% { opacity: 0; transform: scale(1.5) translate(-8px, -4px); }
+    }
+    @keyframes ramenSlurp {
+      0%, 100% { transform: translateY(0); }
+      25% { transform: translateY(-4px) scale(0.96, 1.04); }
+      50% { transform: translateY(1px) scale(1.04, 0.96); }
+      75% { transform: translateY(-2px) scale(0.98, 1.02); }
+    }
+    @keyframes sparklePop {
+      0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+      50% { opacity: 1; transform: scale(1.3) rotate(90deg); }
+    }
+    @keyframes flightBank {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-4px) rotate(5deg); }
+      50% { transform: translateY(-1px) rotate(0deg); }
+      75% { transform: translateY(-5px) rotate(-5deg); }
+    }
+    @keyframes cloudDriftFast {
+      0% { transform: translateX(25px); opacity: 0; }
+      25% { opacity: 0.9; }
+      75% { opacity: 0.9; }
+      100% { transform: translateX(-35px); opacity: 0; }
+    }
+    @keyframes packingPanic {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      25% { transform: rotate(-5deg) translateY(-2px); }
+      50% { transform: rotate(0deg) translateY(0); }
+      75% { transform: rotate(5deg) translateY(-2px); }
+    }
+    @keyframes floatItem {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-4px) rotate(6deg); }
+    }
+    @keyframes discoGroove {
+      0%, 100% { transform: translateY(0) rotate(-7deg) scale(1); }
+      25% { transform: translateY(-4px) rotate(0deg) scale(1.06, 0.94); }
+      50% { transform: translateY(0) rotate(7deg) scale(1); }
+      75% { transform: translateY(-4px) rotate(0deg) scale(0.94, 1.06); }
+    }
+    @keyframes discoSparkle {
+      0%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+      50% { opacity: 1; transform: scale(1.4) rotate(180deg); }
+    }
+    @keyframes wasabiPanic {
+      0% { transform: translate(0, 0) scale(1); filter: drop-shadow(0 0 0px #ef4444); }
+      20% { transform: translate(-2px, 1.5px) scale(1.08); filter: drop-shadow(0 0 8px #ef4444); }
+      40% { transform: translate(2px, -2px) scale(0.94); filter: drop-shadow(0 0 14px #ef4444); }
+      60% { transform: translate(-2.5px, -1px) scale(1.06); filter: drop-shadow(0 0 8px #ef4444); }
+      80% { transform: translate(1.5px, 1.5px) scale(0.96); filter: drop-shadow(0 0 12px #ef4444); }
+      100% { transform: translate(0, 0) scale(1); filter: drop-shadow(0 0 0px #ef4444); }
+    }
+    @keyframes sweatDropL {
+      0% { opacity: 0; transform: translateY(-4px) translateX(0) scale(0.5); }
+      40% { opacity: 1; transform: translateY(0) translateX(-2px) scale(1.2); }
+      100% { opacity: 0; transform: translateY(12px) translateX(-6px) scale(0.7); }
+    }
+    @keyframes sweatDropR {
+      0% { opacity: 0; transform: translateY(-4px) translateX(0) scale(0.5); }
+      40% { opacity: 1; transform: translateY(0) translateX(2px) scale(1.2); }
+      100% { opacity: 0; transform: translateY(12px) translateX(6px) scale(0.7); }
+    }
+    @keyframes deerDodge {
+      0%, 100% { transform: translateX(0); }
+      35% { transform: translateX(4px) rotate(3deg); }
+      70% { transform: translateX(-4px) rotate(-3deg); }
+    }
+    @keyframes deerHeadBob {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-3px) rotate(-8deg); }
+    }
+    @keyframes superAura {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px #ffd166); }
+      50% { transform: scale(1.06); filter: drop-shadow(0 0 16px #fbbf24) drop-shadow(0 0 8px #f59e0b); }
+    }
+
+    .anim-breathe { animation: pixelBreathe 3s ease-in-out infinite; }
+    .anim-sleep-snore { animation: sleepSnore 2.2s ease-in-out infinite; }
+    .anim-caffeine-jitter { animation: caffeineJitter 0.2s steps(2, jump-none) infinite; }
+    .anim-ramen-slurp { animation: ramenSlurp 1.2s ease-in-out infinite; }
+    .anim-hero-strut { animation: heroStrut 0.65s steps(4, jump-none) infinite; }
+    .anim-flight-bank { animation: flightBank 2.2s ease-in-out infinite; }
+    .anim-packing-panic { animation: packingPanic 0.8s ease-in-out infinite; }
+    .anim-disco-groove { animation: discoGroove 0.75s ease-in-out infinite; }
+    .anim-wasabi-panic { animation: wasabiPanic 0.4s ease-in-out infinite; }
+    .anim-deer-dodge { animation: deerDodge 1.4s ease-in-out infinite; }
+    .anim-super-aura { animation: superAura 1.2s ease-in-out infinite; }
+
+    .snore-bubble { animation: snoreBubble 2.2s ease-out infinite; transform-origin: 28px 18px; }
+    .zzz-part-1 { animation: floatZzz1 2.2s ease-out infinite; }
+    .zzz-part-2 { animation: floatZzz2 2.2s ease-out infinite 0.7s; }
+    .zzz-part-3 { animation: floatZzz3 2.2s ease-out infinite 1.4s; }
+    .steam-part-1 { animation: steamRise 1.8s ease-out infinite; }
+    .steam-part-2 { animation: steamRise 1.8s ease-out infinite 0.9s; }
+    .spark-pop-1 { animation: sparkPop 0.8s ease-in-out infinite; transform-origin: 38px 12px; }
+    .spark-pop-2 { animation: sparkPop 0.8s ease-in-out infinite 0.4s; transform-origin: 8px 14px; }
+    .spark-pop-3 { animation: sparkPop 0.8s ease-in-out infinite 0.2s; transform-origin: 40px 25px; }
+    .sparkle-pop { animation: sparklePop 1.4s ease-in-out infinite; transform-origin: 39px 29px; }
+    .dust-puff-1 { animation: dustPuff 0.65s ease-out infinite; }
+    .dust-puff-2 { animation: dustPuff 0.65s ease-out infinite 0.32s; }
+    .cloud-part { animation: cloudDriftFast 3.2s linear infinite; }
+    .cloud-part-fast { animation: cloudDriftFast 2.2s linear infinite 1.1s; }
+    .float-passport { animation: floatItem 1.8s ease-in-out infinite; }
+    .disco-sparkle-1 { animation: discoSparkle 1.1s ease-in-out infinite; transform-origin: 10px 12px; }
+    .disco-sparkle-2 { animation: discoSparkle 1.1s ease-in-out infinite 0.35s; transform-origin: 40px 10px; }
+    .disco-sparkle-3 { animation: discoSparkle 1.1s ease-in-out infinite 0.7s; transform-origin: 41px 35px; }
+    .sweat-drop-l { animation: sweatDropL 0.8s ease-out infinite; }
+    .sweat-drop-r { animation: sweatDropR 0.8s ease-out infinite 0.4s; }
+    .deer-head { animation: deerHeadBob 1.4s ease-in-out infinite; }
+
+    /* Hero Location Card */
+    .hero-card {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.28) 0%, rgba(15, 23, 42, 0.7) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 16px;
+      padding: 18px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .hero-badge-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .hero-city { font-size: 24px; font-weight: 900; color: #ffffff; }
+    .hero-stage { font-size: 11px; font-weight: 700; color: var(--accent); background: rgba(255,209,102,0.12); padding: 3px 8px; border-radius: 6px; }
+    .hero-blurb { font-size: 14px; font-weight: 600; line-height: 1.5; color: #f8fafc; margin-bottom: 14px; }
+    .hero-focus { font-size: 12px; color: #cbd5e1; line-height: 1.45; background: rgba(0,0,0,0.25); border-radius: 8px; padding: 10px 12px; }
+
+    /* Action Buttons */
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      text-decoration: none; padding: 12px 14px; border-radius: 10px;
+      font-size: 13px; font-weight: 700; text-align: center; cursor: pointer;
+      border: none;
+    }
+    .btn-danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .btn-primary { background: #2563eb; color: #ffffff; }
+    .btn-secondary { background: var(--card-bg); color: #cbd5e1; border: 1px solid var(--border); }
+    .btn:active { transform: scale(0.98); }
+
+    /* Cards */
+    .card { scroll-margin-top: 20px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px; margin-bottom: 14px;
+    }
+    .card-header {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;
+    }
+    .card-title { font-size: 13px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Flights List */
+    .flight-item {
+      background: #0f1420; border: 1px solid #1a2334; border-radius: 10px;
+      padding: 12px; margin-bottom: 10px;
+    }
+    .flight-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .flight-num { font-size: 14px; font-weight: 800; color: #ffffff; }
+    .flight-aircraft { font-size: 11px; color: var(--text-muted); }
+    .flight-route { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; }
+    .airport-code { font-size: 18px; font-weight: 900; color: var(--accent); }
+    .airport-time { font-size: 11px; color: #e2e8f0; font-weight: 600; margin-top: 2px; }
+    .flight-btn {
+      display: inline-block; background: #1e3a5f; color: #93c5fd; text-decoration: none;
+      font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px;
+    }
+    .layover-pill {
+      background: rgba(255, 209, 102, 0.08); border: 1px dashed rgba(255, 209, 102, 0.3);
+      border-radius: 8px; padding: 8px 10px; font-size: 11px; color: var(--accent); margin-bottom: 10px;
+    }
+
+    /* Emergency Section */
+    .emerg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .call-btn {
+      display: block; text-align: center; text-decoration: none; padding: 10px 8px;
+      border-radius: 8px; font-size: 12px; font-weight: 700;
+    }
+    .call-btn-red { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.45); }
+    .call-btn-blue { background: #1e3a5f; color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.4); }
+    .call-btn-green { background: #064e3b; color: #6ee7b7; border: 1px solid #059669; }
+
+    .phrase-card {
+      background: #0f1420; border-radius: 8px; padding: 8px 10px; margin-top: 6px;
+      font-size: 11px; line-height: 1.4; border-left: 3px solid #fca5a5;
+    }
+    .phrase-en { font-weight: 700; color: #ffffff; }
+    .phrase-ja { color: #fca5a5; font-size: 12px; margin-top: 2px; }
+    .phrase-romaji { color: #94a3b8; font-size: 10px; font-style: italic; }
+
+    /* Timeline Day Selectors */
+    .timeline-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
+    .chip {
+      flex: 0 0 auto; background: #182234; border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 12px; font-size: 11px; font-weight: 700;
+      color: var(--text-muted); cursor: pointer;
+    }
+    .chip.active { background: #2563eb; color: #ffffff; border-color: #3b82f6; }
+
+    .footer { text-align: center; font-size: 11px; color: #64748b; margin-top: 30px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">🇯🇵 Live Companion Tracker</div>
+      <h1 class="title">Where's Josh?</h1>
+      <div class="subtitle">SideQuests Japan 2027 • Family & Friends Dashboard</div>
+    </div>
+
+    <!-- Dual Clocks & Animated Pixel Josh Status Bar -->
+    <div class="status-bar">
+      <div class="clock-row">
+        <div class="clock-col">
+          <div class="clock-label" id="joshClockLabel">Josh's Time • JST</div>
+          <div class="clock-time jp" id="japanTime">--:-- --</div>
+          <div class="clock-sub" id="joshClockSub" style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Josh Standard Time • Central</div>
+        </div>
+        <div class="clock-col right">
+          <div class="clock-label">Your Local Time</div>
+          <div class="clock-time" id="localTime">--:-- --</div>
+          <div class="clock-sub" id="userClockSub" style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Viewer Device Time</div>
+        </div>
+      </div>
+
+      <!-- Retro 8-Bit Pixel Character Card -->
+      <div class="pixel-card" id="pixelCard">
+        <div class="pixel-avatar-box" id="pixelAvatarBox">
+          <!-- Dynamic SVG pixel sprite will be rendered here -->
+        </div>
+        <div class="pixel-info">
+          <div class="pixel-badge" id="pixelBadge">👾 PIXEL JOSH: CALCULATING</div>
+          <div class="pixel-desc" id="pixelDesc">Synchronizing with Tokyo clock...</div>
+          <div class="pixel-sub" id="pixelSub">JST Live Status</div>
+        </div>
+        <a class="pixel-text-btn" href="sms:">💬 Text</a>
+      </div>
+
+      <!-- State Preview Selector for Family -->
+      <div class="pixel-preview-row">
+        <span class="preview-label">Sprite Poses:</span>
+        <button class="preview-pill" onclick="setManualSprite('preparing')">🎒 Preparing</button>
+        <button class="preview-pill" onclick="setManualSprite('sleep')">🛌 Sleep</button>
+        <button class="preview-pill" onclick="setManualSprite('morning')">☕ Morning</button>
+        <button class="preview-pill" onclick="setManualSprite('explore')">🎒 Explore</button>
+        <button class="preview-pill" onclick="setManualSprite('dining')">🍜 Ramen</button>
+        <button class="preview-pill" onclick="setManualSprite('flight')">✈️ Flight</button>
+        <button class="preview-pill" onclick="setManualSprite('disco')">🕺 Disco</button>
+        <button class="preview-pill" onclick="setManualSprite('wasabi')">🌶️ Wasabi</button>
+        <button class="preview-pill" onclick="setManualSprite('deer')">🦌 Deer</button>
+        <button class="preview-pill" onclick="setManualSprite('super')">⚡ Power Up</button>
+        <button class="preview-pill active" id="pillAuto" onclick="setAutoSprite()">⚡ Live Auto</button>
+      </div>
+    </div>
+
+    <!-- Active Location Hero Card -->
+    <div class="hero-card">
+      <div class="hero-badge-row">
+        <div class="hero-city" id="heroCity">Tokyo Ready</div>
+        <div class="hero-stage" id="heroStage">Countdown</div>
+      </div>
+      <div class="hero-blurb" id="heroBlurb">
+        Josh is counting down the days to his Japan adventure! Departures Sunday, March 21 on United & ANA.
+      </div>
+      <div class="hero-focus">
+        <strong>🎯 Focus:</strong> <span id="heroFocus">Finalizing packing list and tour preparations.</span>
+      </div>
+    </div>
+
+    <!-- Direct Action Shortcuts (Replaced redundant Map City with Direct Emergency & Insurance) -->
+    <div class="btn-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px;">
+      <a class="btn btn-danger" href="#emergencySection" style="padding: 10px 4px; font-size: 11px;">
+        🚨 Emergency Hub
+      </a>
+      <a class="btn btn-primary" href="#timelineSection" style="padding: 10px 4px; font-size: 11px;">
+        📅 Full Itinerary
+      </a>
+      <a class="btn" href="sms:" style="background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 10px 4px; font-size: 11px; text-align: center; text-decoration: none; border-radius: 10px; font-weight: 700;">
+        💬 Text Josh
+      </a>
+    </div>
+
+    <!-- Verified Flight Hub (Opens in User's Default Browser) -->
+    <div class="card">
+      <div class="card-header">
+        <span style="font-size: 16px;">✈️</span>
+        <span class="card-title">Verified Flight Schedule</span>
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+        Passenger: <strong>JOSHUADANIEL WISE</strong> • eTicket: <strong style="color: var(--accent); font-family: monospace;">0162153570261</strong>
+      </div>
+
+      <!-- Outbound -->
+      <div style="font-size: 11px; font-weight: 800; color: #93c5fd; text-transform: uppercase; margin: 12px 0 6px 2px;">
+        Outbound: USA ➔ Tokyo (Sun, Mar 21)
+      </div>
+      <div class="flight-item">
+        <div class="flight-top">
+          <span class="flight-num">United UA 5240</span>
+          <span class="flight-aircraft">Embraer ERJ-145</span>
+          <a class="flight-btn" href="https://www.flightaware.com/live/flight/UAL5240" target="_blank" rel="noopener noreferrer">Live Track ✈️</a>
+        </div>
+        <div class="flight-route">
+          <div>
+            <div class="airport-code">LIT</div>
+            <div style="font-size: 10px; color: var(--text-muted);">Little Rock</div>
+            <div class="airport-time">7:00 AM CST</div>
+          </div>
+          <div style="color: #64748b; font-size: 12px;">➔ 1h 50m ➔</div>
+          <div style="text-align: right;">
+            <div class="airport-code">IAH</div>
+            <div style="font-size: 10px; color: var(--text-muted);">Houston</div>
+            <div class="airport-time">8:50 AM CST</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layover-pill">
+        ⏳ <strong>Layover in Houston (IAH):</strong> 2h 20m connection to ANA International Terminal.
+      </div>
+
+      <div class="flight-item">
+        <div class="flight-top">
+          <span class="flight-num">ANA NH 113</span>
+          <span class="flight-aircraft">Boeing 777-300ER</span>
+          <a class="flight-btn" href="https://www.flightaware.com/live/flight/ANA113" target="_blank" rel="noopener noreferrer">Live Track ✈️</a>
+        </div>
+        <div class="flight-route">
+          <div>
+            <div class="airport-code">IAH</div>
+            <div style="font-size: 10px; color: var(--text-muted);">Houston</div>
+            <div class="airport-time">11:10 AM CST</div>
+          </div>
+          <div style="color: #64748b; font-size: 12px;">➔ 13h 15m ➔</div>
+          <div style="text-align: right;">
+            <div class="airport-code">HND</div>
+            <div style="font-size: 10px; color: var(--text-muted);">Tokyo Haneda (T3)</div>
+            <div class="airport-time">Mon, 3:25 PM JST</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Return -->
+      <div style="font-size: 11px; font-weight: 800; color: #ffd166; text-transform: uppercase; margin: 16px 0 6px 2px;">
+        Return: Tokyo ➔ USA (Wed, Mar 31)
+      </div>
+      <div class="flight-item">
+        <div class="flight-top">
+          <span class="flight-num">United UA 882 / ANA 114</span>
+          <span class="flight-aircraft">Boeing 777-200</span>
+          <a class="flight-btn" href="https://www.flightaware.com/live/flight/UAL882" target="_blank" rel="noopener noreferrer">Live Track ✈️</a>
+        </div>
+        <div class="flight-route">
+          <div>
+            <div class="airport-code">HND</div>
+            <div style="font-size: 10px; color: var(--text-muted);">Tokyo Haneda (T3)</div>
+            <div class="airport-time">5:15 PM JST</div>
+          </div>
+          <div style="color: #64748b; font-size: 12px;">➔ 12h 00m ➔</div>
+          <div style="text-align: right;">
+            <div class="airport-code">ORD</div>
+            <div style="font-size: 10px; color: var(--text-muted);">Chicago O'Hare</div>
+            <div class="airport-time">3:15 PM CDT</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layover-pill">
+        ⏳ <strong>Layover in Chicago (ORD):</strong> 4h 40m for US Customs & terminal transfer.
+      </div>
+
+      <div class="flight-item">
+        <div class="flight-top">
+          <span class="flight-num">United UA 4542</span>
+          <span class="flight-aircraft">Embraer 175</span>
+          <a class="flight-btn" href="https://www.flightaware.com/live/flight/SKW4542" target="_blank" rel="noopener noreferrer">Live Track ✈️</a>
+        </div>
+        <div class="flight-route">
+          <div>
+            <div class="airport-code">ORD</div>
+            <div style="font-size: 10px; color: var(--text-muted);">Chicago O'Hare</div>
+            <div class="airport-time">7:55 PM CDT</div>
+          </div>
+          <div style="color: #64748b; font-size: 12px;">➔ 1h 59m ➔</div>
+          <div style="text-align: right;">
+            <div class="airport-code">LIT</div>
+            <div style="font-size: 10px; color: var(--text-muted);">Little Rock</div>
+            <div class="airport-time">9:54 PM CDT</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Hotel Basecamp -->
+    <div class="card">
+      <div class="card-header">
+        <span style="font-size: 16px;">🏨</span>
+        <span class="card-title">Active Accommodations</span>
+      </div>
+      <div style="font-size: 14px; font-weight: 800; color: #ffffff;" id="hotelName">
+        Hotel Groove Shinjuku (Tokyu Kabukicho Tower)
+      </div>
+      <div style="font-size: 12px; color: #cbd5e1; margin-top: 3px;" id="hotelAddress">
+        1-29-1 Kabukicho, Shinjuku City, Tokyo 160-0021
+      </div>
+      <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;" id="hotelAddressJa">
+        🇯🇵 東京都新宿区歌舞伎町1-29-1 東急歌舞伎町タワー
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <a class="call-btn call-btn-blue" style="flex: 1;" id="hotelMapLink" href="https://maps.apple.com/?q=Hotel+Groove+Shinjuku" target="_blank" rel="noopener noreferrer">
+          🗺️ Hotel in Maps
+        </a>
+        <a class="call-btn call-btn-green" style="flex: 1;" id="hotelPhoneLink" href="tel:+81362338888">
+          📞 Call Front Desk
+        </a>
+      </div>
+    </div>
+
+    <!-- Comprehensive Emergency & Insurance Hub -->
+    <div class="card" id="emergencySection" style="border-color: rgba(239, 68, 68, 0.4);">
+      <div class="card-header">
+        <span style="font-size: 16px;">🚨</span>
+        <span class="card-title" style="color: #fca5a5;">Emergency, Insurance & Safety Hub</span>
+      </div>
+
+      <!-- Tin Leg Platinum Travel Insurance -->
+      <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 800; color: #fca5a5; margin-bottom: 4px;">
+          🛡️ Tin Leg Platinum Travel Insurance Policy
+        </div>
+        <div style="font-size: 12px; line-height: 1.5; color: #cbd5e1;">
+          <strong>Coverage:</strong> $100,000 Emergency Medical • $500,000 Medical Evacuation • $20,000 Trip Cancellation<br>
+          <strong>24/7 International Emergency Hotline:</strong> <a href="tel:+17272645657" style="color: var(--accent); font-weight: 800;">+1 727-264-5657</a><br>
+          <strong>US Toll-Free:</strong> 844-927-9265
+        </div>
+        <div class="emerg-grid">
+          <a class="call-btn call-btn-red" href="tel:+17272645657">🚨 Call Tin Leg 24/7</a>
+          <a class="call-btn call-btn-blue" href="https://tinleg.com/report-claim" target="_blank" rel="noopener noreferrer">📋 Online Claim Portal</a>
+        </div>
+      </div>
+
+      <!-- US Embassy & Japan First Responders -->
+      <div style="font-size: 12px; line-height: 1.5; color: #cbd5e1; margin-bottom: 10px;">
+        <strong>🇺🇸 U.S. Embassy Tokyo:</strong> 1-10-5 Akasaka, Minato-ku, Tokyo<br>
+        <strong>Embassy 24/7 Emergency Line:</strong> <a href="tel:+81332245000" style="color: #93c5fd; font-weight: 700;">+81 3-3224-5000</a><br>
+        <strong>🇯🇵 Japan Police:</strong> <a href="tel:110" style="color: var(--accent);">110</a> &nbsp;•&nbsp; <strong>Fire & Ambulance:</strong> <a href="tel:119" style="color: #fca5a5;">119</a><br>
+        <strong>Japan Tourist Helpline (English 24/7):</strong> <a href="tel:0570000911" style="color: #93c5fd;">0570-000-911</a>
+      </div>
+
+      <!-- Emergency Japanese Medical Cards -->
+      <div style="font-size: 11px; font-weight: 800; color: #ffd166; text-transform: uppercase; margin: 12px 0 4px 2px;">
+        Emergency Japanese Phrases (Show to Responders / Taxi)
+      </div>
+      <div class="phrase-card">
+        <div class="phrase-en">Please call an ambulance!</div>
+        <div class="phrase-ja">救急車を呼んでください</div>
+        <div class="phrase-romaji">Kyūkyūsha o yonde kudasai</div>
+      </div>
+      <div class="phrase-card">
+        <div class="phrase-en">Please take me to the nearest hospital.</div>
+        <div class="phrase-ja">一番近い病院へ連れて行ってください</div>
+        <div class="phrase-romaji">Ichiban chikai byōin e tsurete itte kudasai</div>
+      </div>
+      <div class="phrase-card">
+        <div class="phrase-en">I need an English-speaking doctor.</div>
+        <div class="phrase-ja">英語を話せる医師をお願いします</div>
+        <div class="phrase-romaji">Eigo o hanaseru ishi o onegaishimasu</div>
+      </div>
+      <div class="phrase-card">
+        <div class="phrase-en">I have international travel medical insurance.</div>
+        <div class="phrase-ja">海外旅行保険に加入しています</div>
+        <div class="phrase-romaji">Kaigai ryokō hoken ni kanyū shite imasu</div>
+      </div>
+    </div>
+
+    <!-- Interactive Day Navigator -->
+    <div class="card" id="timelineSection">
+      <div class="card-header">
+        <span style="font-size: 16px;">📅</span>
+        <span class="card-title">10-Day Trip Timeline (Tap Any Day)</span>
+      </div>
+      <div class="timeline-chips" id="chipsRow"></div>
+      <div id="dayDetailBox" style="font-size: 12px; color: #cbd5e1; line-height: 1.5; background: #0f1420; padding: 12px; border-radius: 8px;">
+        Tap any date above to see what Josh has planned for that day!
+      </div>
+    </div>
+
+    <div class="footer">
+      Where's Josh? • SideQuests Japan 2027<br>
+      Links open directly in your device's default web browser.<br>
+      Zero links to private trip planning documents.
+    </div>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------
+    // RETRO 8-BIT PIXEL SPRITE MATRIX
+    // -------------------------------------------------------------
+        const PALETTE = {
+      'H': '#784728', // hair base (warm golden-brown from photo)
+      'h': '#553018', // fade sides (neatly tapered)
+      'F': '#9b643c', // hair highlight
+      'S': '#fde2b6', // skin tone (fair warm)
+      's': '#ebb991', // nose / wireframe bridge
+      'G': '#d97706', // gold wireframe aviator glasses
+      'E': '#1e293b', // eyes (pupils)
+      'B': '#58361e', // trimmed beard & mustache (from photo)
+      'W': '#ffffff', // bright smile / white teeth
+      'T': '#9ca3af', // athletic crew-neck gray tee (from photo)
+      't': '#6b7280', // t-shirt shadow / folds
+      'P': '#1e293b', // dark athletic joggers
+      'K': '#0f172a', // black watch on wrist / shoes
+      'O': '#b45309', // leather adventure backpack
+      'Y': '#facc15', // gold checklist / passport
+      'C': '#38bdf8', // coffee mug / blanket cyan
+      'M': '#64748b', // bed frame
+      'Z': '#c084fc', // purple Zzz
+      'R': '#ef4444', // red ramen bowl
+      'V': '#e2e8f0'  // steam / fluffy clouds
+    };
+
+    const SPRITE_MATRICES = {
+      // Pre-Trip Mode: Josh with athletic gray tee, gold wireframe glasses, neat beard, watch & backpack!
+      preparing: [
+        ".....HHHHHH.....",
+        "....FHHHHHHF....",
+        "...hHSSSSSSHh...",
+        "...hGEGsGEGh....",
+        "...hSGsSSGSh....",
+        "...hBBWWBBBh....",
+        "....hBBBBBh.....",
+        "..OOTTTTTTTT....",
+        "..OOTTTTTTTT.YY.",
+        "..OOTTTTTTTT.YY.",
+        "..K.TTTTTTTT....",
+        ".....PPPPPP.....",
+        ".....PPPPPP.....",
+        "....PPP..PPP....",
+        "....PP....PP....",
+        "...KKK....KKK..."
+      ],
+
+      // Trip Mode: Night sleep
+      sleep: [
+        "................",
+        "............ZZ..",
+        "...........Z....",
+        "..........ZZ....",
+        ".....HHHHHH.....",
+        "....FHHHHHHF....",
+        "...hGEGsGEGh....",
+        "...hBBWWBBBh....",
+        ".CCCCCCCCCCCCCC.",
+        ".CCCCCCCCCCCCCC.",
+        ".CCCCCCCCCCCCCC.",
+        ".CCCCCCCCCCCCCC.",
+        ".CCCCCCCCCCCCCC.",
+        ".MMMMMMMMMMMMMM.",
+        ".MM..........MM.",
+        "................"
+      ],
+
+      // Trip Mode: Morning coffee prep
+      morning: [
+        ".....HHHHHH.....",
+        "....FHHHHHHF....",
+        "...hHSSSSSSHh...",
+        "...hGEGsGEGh....",
+        "...hSGsSSGSh....",
+        "...hBBWWBBBh....",
+        "....hBBBBBh.....",
+        "....TTTTTTTT.VV.",
+        "...TTTTTTTTC.V..",
+        "...TTTTTTTTC....",
+        "..K.TTTTTTTTCC..",
+        ".....PPPPPP.....",
+        ".....PPPPPP.....",
+        "....PPP..PPP....",
+        "....PP....PP....",
+        "...KKK....KKK..."
+      ],
+
+      // Trip Mode: Daytime active questing
+      explore: [
+        ".....HHHHHH.....",
+        "....FHHHHHHF....",
+        "...hHSSSSSSHh...",
+        "...hGEGsGEGh....",
+        "...hSGsSSGSh....",
+        "...hBBWWBBBh....",
+        "....hBBBBBh.....",
+        "..OOTTTTTTTT....",
+        "..OOTTTTTTTT....",
+        "..OOTTTTTTTT....",
+        "..K.TTTTTTTT....",
+        ".....PPPPPP.....",
+        ".....PPPPPP.....",
+        "....PPP..PPP....",
+        "....PP....PP....",
+        "...KKK....KKK..."
+      ],
+
+      // Trip Mode: Evening dinner & ramen
+      dining: [
+        ".....HHHHHH.....",
+        "....FHHHHHHF....",
+        "...hHSSSSSSHh...",
+        "...hGEGsGEGh....",
+        "...hSGsSSGSh....",
+        "...hBBWWBBBh....",
+        "....hBBBBBh.....",
+        "....TTTTTTTT.VV.",
+        "...TTTTTTTT.V.V.",
+        "...TTTTTTTT..YY.",
+        "..KRRRRRRRR.....",
+        "....RRRRRR......",
+        ".....PPPPPP.....",
+        ".....PPPPPP.....",
+        "....PPP..PPP....",
+        "...KKK....KKK..."
+      ],
+
+      // Trip Mode: In flight
+      flight: [
+        "................",
+        "..........WW....",
+        ".........WWW....",
+        "........WWWW....",
+        "....WWWWWWWWWW..",
+        "...WWWWWEWWWWW..",
+        "..WWWWWWWWWWWWW.",
+        ".WWWWWWWWWWWWWWW",
+        "..WWWWWWWWWWWWW.",
+        "...WWWWWWWWWWW..",
+        "....WWWWWWWWWW..",
+        "........WWWW....",
+        ".........WWW....",
+        "..........WW....",
+        ".VVVV......VVVV.",
+        "VVVVVVVV..VVVVVV"
+      ],
+
+      // Post-Trip Mode: Safely Home
+      home: [
+        ".....HHHHHH.....",
+        "....FHHHHHHF....",
+        "...hHSSSSSSHh...",
+        "...hGEGsGEGh....",
+        "...hSGsSSGSh....",
+        "...hBBWWBBBh....",
+        "....hBBBBBh.....",
+        "....TTTTTTTT....",
+        "...WTTTTTTTTW...",
+        "...WTTTTTTTTW...",
+        "..K.TTTTTTTT....",
+        ".....PPPPPP.....",
+        ".....PPPPPP.....",
+        "....PPP..PPP....",
+        "....PP....PP....",
+        "...KKK....KKK..."
+      ]
+    };
+
+    let isManualSprite = false;
+
+    function applyPixelState(stateKey, descText, badgeText, subText, accentColor) {
+      let baseKey = stateKey;
+      if (stateKey === "disco" || stateKey === "wasabi" || stateKey === "super") baseKey = "preparing";
+      if (stateKey === "deer") baseKey = "explore";
+      const grid = SPRITE_MATRICES[baseKey] || SPRITE_MATRICES.preparing;
+
+      const pSize = 3;
+      const rects = [];
+      for (let r = 0; r < grid.length; r++) {
+        for (let c = 0; c < grid[r].length; c++) {
+          let ch = grid[r][c];
+          let hex = PALETTE[ch];
+          if (hex) {
+            rects.push(`<rect x="${c * pSize}" y="${r * pSize}" width="${pSize}" height="${pSize}" fill="${hex}" />`);
+          }
+        }
+      }
+
+      let animClass = "anim-hero-strut";
+      let extras = "";
+      if (stateKey === "sleep") {
+        animClass = "anim-sleep-snore";
+        extras = `
+          <g class="zzz-part-1"><text x="32" y="14" fill="#c084fc" font-size="9" font-family="monospace" font-weight="bold">Z</text></g>
+          <g class="zzz-part-2"><text x="36" y="10" fill="#e9d5ff" font-size="7" font-family="monospace" font-weight="bold">z</text></g>
+          <g class="zzz-part-3"><text x="40" y="6" fill="#f5d0fe" font-size="6" font-family="monospace" font-weight="bold">z</text></g>
+          <circle cx="28" cy="18" r="3.5" fill="rgba(192,132,252,0.4)" stroke="#e9d5ff" stroke-width="0.5" class="snore-bubble" />
+        `;
+      } else if (stateKey === "morning") {
+        animClass = "anim-caffeine-jitter";
+        extras = `
+          <g class="steam-part-1"><circle cx="38" cy="18" r="1.5" fill="#f8fafc" /></g>
+          <g class="steam-part-2"><circle cx="40" cy="14" r="1.5" fill="#e2e8f0" /></g>
+          <polygon points="40,8 37,12 39,12 36,16 41,11 39,11" fill="#facc15" class="spark-pop-1" />
+          <polygon points="10,10 7,14 9,14 6,18 11,13 9,13" fill="#facc15" class="spark-pop-2" />
+        `;
+      } else if (stateKey === "dining") {
+        animClass = "anim-ramen-slurp";
+        extras = `
+          <g class="steam-part-1"><circle cx="34" cy="16" r="1.5" fill="#f8fafc" /></g>
+          <g class="steam-part-2"><circle cx="38" cy="12" r="1.5" fill="#e2e8f0" /></g>
+          <polygon points="38,28 39,26 40,28 42,29 40,30 39,32 38,30 36,29" fill="#ffd166" class="sparkle-pop" />
+        `;
+      } else if (stateKey === "flight") {
+        animClass = "anim-flight-bank";
+        extras = `
+          <g class="cloud-part"><circle cx="44" cy="12" r="3.5" fill="#ffffff" opacity="0.8" /><circle cx="48" cy="13" r="2.5" fill="#ffffff" opacity="0.8" /></g>
+          <g class="cloud-part-fast"><circle cx="40" cy="38" r="3" fill="#ffffff" opacity="0.6" /><circle cx="44" cy="39" r="2" fill="#ffffff" opacity="0.6" /></g>
+        `;
+      } else if (stateKey === "explore") {
+        animClass = "anim-hero-strut";
+        extras = `
+          <circle cx="6" cy="45" r="2" fill="#94a3b8" class="dust-puff-1" />
+          <circle cx="4" cy="43" r="1.5" fill="#cbd5e1" class="dust-puff-2" />
+        `;
+      } else if (stateKey === "preparing" || stateKey === "home") {
+        animClass = "anim-packing-panic";
+        extras = `
+          <rect x="36" y="22" width="6" height="8" rx="1" fill="#facc15" stroke="#ca8a04" stroke-width="0.5" class="float-passport" />
+        `;
+      } else if (stateKey === "disco") {
+        animClass = "anim-disco-groove";
+        extras = `
+          <polygon points="8,10 10,6 12,10 16,12 12,14 10,18 8,14 4,12" fill="#ec4899" class="disco-sparkle-1" />
+          <polygon points="38,8 40,4 42,8 46,10 42,12 40,16 38,12 34,10" fill="#06b6d4" class="disco-sparkle-2" />
+          <polygon points="40,34 41,32 42,34 44,35 42,36 41,38 40,36 38,35" fill="#ffd166" class="disco-sparkle-3" />
+        `;
+      } else if (stateKey === "wasabi") {
+        animClass = "anim-wasabi-panic";
+        extras = `
+          <path d="M 6,14 C 4,12 8,12 6,10 C 4,12 4,16 6,18 C 8,18 8,16 6,14" fill="#38bdf8" class="sweat-drop-l" />
+          <path d="M 42,14 C 40,12 44,12 42,10 C 40,12 40,16 42,18 C 44,18 44,16 42,14" fill="#38bdf8" class="sweat-drop-r" />
+          <circle cx="12" cy="8" r="1.5" fill="#ef4444" class="steam-part-1" />
+          <circle cx="36" cy="8" r="1.5" fill="#ef4444" class="steam-part-2" />
+        `;
+      } else if (stateKey === "deer") {
+        animClass = "anim-deer-dodge";
+        extras = `
+          <g class="deer-head" transform="translate(34, 20)">
+            <rect x="2" y="2" width="6" height="5" fill="#b45309" />
+            <rect x="3" y="0" width="2" height="3" fill="#78350f" />
+            <rect x="6" y="0" width="1" height="2" fill="#78350f" />
+            <circle cx="4" cy="4" r="0.8" fill="#000000" />
+            <circle cx="4.2" cy="3.8" r="0.3" fill="#ffffff" />
+            <rect x="7" y="4" width="3" height="3" fill="#d97706" />
+          </g>
+        `;
+      } else if (stateKey === "super") {
+        animClass = "anim-super-aura";
+        extras = `
+          <polygon points="24,2 26,6 23,8 27,12 24,14" fill="#facc15" class="spark-pop-1" />
+          <polygon points="6,24 10,22 8,26 12,25 9,28" fill="#fbbf24" class="spark-pop-2" />
+          <polygon points="42,24 38,22 40,26 36,25 39,28" fill="#f59e0b" class="spark-pop-3" />
+        `;
+      }
+
+      const svg = `
+        <svg viewBox="0 0 48 48" width="48" height="48" style="image-rendering: pixelated; shape-rendering: crispEdges;">
+          <g class="${animClass}">
+            ${rects.join('')}
+          </g>
+          ${extras}
+        </svg>
+      `;
+
+      const avatarBox = document.getElementById('pixelAvatarBox');
+      if (avatarBox) avatarBox.innerHTML = svg;
+
+      const card = document.getElementById('pixelCard');
+      if (card && accentColor) card.style.borderColor = accentColor;
+
+      const badge = document.getElementById('pixelBadge');
+      if (badge && badgeText) {
+        badge.innerText = badgeText;
+        if (accentColor) badge.style.color = accentColor;
+      }
+
+      const desc = document.getElementById('pixelDesc');
+      if (desc && descText) desc.innerText = descText;
+
+      const sub = document.getElementById('pixelSub');
+      if (sub && subText) sub.innerText = subText;
+    }
+
+    function setManualSprite(key) {
+      isManualSprite = true;
+      document.querySelectorAll('.preview-pill').forEach(p => p.classList.remove('active'));
+      if (window.event && window.event.target) {
+        window.event.target.classList.add('active');
+      }
+
+      const diffDays = Math.ceil((new Date("2027-03-21T07:00:00-05:00") - new Date()) / 86400000);
+
+      if (key === "preparing") {
+        applyPixelState("preparing", "Josh is home in the USA preparing for Japan! (" + diffDays + " days until takeoff)", "🎒 PIXEL JOSH: PREPARING", "Pre-trip preparation", "#ffd166");
+      } else if (key === "sleep") {
+        applyPixelState("sleep", "Josh is fast asleep for the night. (Do Not Disturb)", "🛌 PIXEL JOSH: SLEEP MODE 💤", "Sleep Mode • Zzz", "#c084fc");
+      } else if (key === "morning") {
+        applyPixelState("morning", "Josh is up early, enjoying breakfast & morning coffee!", "☕ PIXEL JOSH: MORNING FUEL", "Morning prep & coffee", "#ffd166");
+      } else if (key === "explore") {
+        applyPixelState("explore", "Josh is out exploring! Good time to send a message.", "🎒 PIXEL JOSH: QUESTING", "Active daytime", "#4ade80");
+      } else if (key === "dining") {
+        applyPixelState("dining", "Josh is out for delicious ramen & evening wind-down.", "🍜 PIXEL JOSH: DINING & RAMEN", "Dinner & ramen slurp", "#fb923c");
+      } else if (key === "flight") {
+        applyPixelState("flight", "Josh is in transit / flight mode crossing time zones!", "✈️ PIXEL JOSH: SKY TRANSIT", "In-Flight over Pacific", "#60a5fa");
+      } else if (key === "disco") {
+        applyPixelState("disco", "Unstoppable groove unlocked! Practicing retro victory dance moves for Shinjuku nightlife.", "🕺 PIXEL JOSH: DISCO FEVER", "Shinjuku dance floor", "#ec4899");
+      } else if (key === "wasabi") {
+        applyPixelState("wasabi", "Too much wasabi at Tsukiji Market! Immediate nasal clearance & cartoon panic! 🌋", "🌶️ PIXEL JOSH: WASABI OVERLOAD", "Tsukiji wasabi shock", "#ef4444");
+      } else if (key === "deer") {
+        applyPixelState("deer", "Surrounded by polite bowing deer in Nara demanding shika senbei (deer crackers)!", "🦌 PIXEL JOSH: NARA DEER AMBUSH", "Nara Park encounter", "#f59e0b");
+      } else if (key === "super") {
+        applyPixelState("super", "Japan hype meter has officially exceeded maximum safety limits! Power level over 9000!", "⚡ PIXEL JOSH: LEVEL 9000", "Maximum hype aura", "#fbbf24");
+      }
+    }
+
+    function setAutoSprite() {
+      isManualSprite = false;
+      document.querySelectorAll('.preview-pill').forEach(p => p.classList.remove('active'));
+      const autoPill = document.getElementById('pillAuto');
+      if (autoPill) autoPill.classList.add('active');
+      updateClocks();
+    }
+
+    
+
+    // -------------------------------------------------------------
+    const SCHEDULE = {
+      "2027-03-21": {
+        city: "In Flight ✈", stage: "Flight Day", isFlight: true,
+        blurb: "Josh departs Little Rock (7:00 AM) to Houston, then takes ANA NH113 across the Pacific to Tokyo!",
+        focus: "13-hour transpacific flight across the International Date Line.",
+        hotel: "In Flight (ANA NH113)", address: "Pacific Air Corridor", addressJa: "太平洋上空",
+        phone: "N/A", map: "Haneda Airport, Tokyo"
+      },
+      "2027-03-22": {
+        city: "Tokyo", stage: "Arrival Day", isFlight: false,
+        blurb: "Josh landed at Tokyo Haneda Airport (3:25 PM JST)! Headed directly to Hotel Groove Shinjuku in Tokyu Kabukicho Tower to settle in, explore Kabukicho, and rest up.",
+        focus: "Haneda arrival transit, digital Suica activation, dinner in Shinjuku, and settling into Hotel Groove Shinjuku.",
+        hotel: "Hotel Groove Shinjuku (Tokyu Kabukicho Tower)", address: "1-29-1 Kabukicho, Shinjuku City, Tokyo 160-0021", addressJa: "東京都新宿区歌舞伎町1-29-1 東急歌舞伎町タワー",
+        phone: "+81 3-6233-8888", map: "Hotel Groove Shinjuku"
+      },
+      "2027-03-23": {
+        city: "Tokyo", stage: "Tokyo Exploration", isFlight: false,
+        blurb: "Josh is exploring Tokyo! Visiting the peaceful Shinjuku Gyoen National Garden, browsing local shops, and getting ready for the official tour kickoff.",
+        focus: "Shinjuku Gyoen gardens, shopping in Shinjuku, and tour orientation meetup.",
+        hotel: "Hotel Groove Shinjuku", address: "1-29-1 Kabukicho, Shinjuku City, Tokyo", addressJa: "東京都新宿区歌舞伎町1-29-1 東急歌舞伎町タワー",
+        phone: "+81 3-6233-8888", map: "Hotel Groove Shinjuku"
+      },
+      "2027-03-24": {
+        city: "Tokyo & Mt. Fuji", stage: "Tour Day 1", isFlight: false,
+        blurb: "SideQuests Day 1! All-day excursion to Mt. Fuji, Chureito Pagoda, and Hakone Ropeway, followed by the group Welcome Dinner.",
+        focus: "Mt. Fuji views, volcanic Hakone valley, 7:30 PM Welcome Dinner.",
+        hotel: "Hotel Groove Shinjuku", address: "1-29-1 Kabukicho, Shinjuku City, Tokyo", addressJa: "東京都新宿区歌舞伎町1-29-1",
+        phone: "+81 3-6233-8888", map: "Hakone Ropeway, Japan"
+      },
+      "2027-03-25": {
+        city: "Tokyo", stage: "Tour Day 2", isFlight: false,
+        blurb: "Sushi making at Tsukiji Market, visiting Senso-ji Temple in Asakusa, Shibuya Crossing, and an evening Ni-chome tour.",
+        focus: "Sushi class, Tokyo's oldest temple, Harajuku fashion, LGBTQ+ district walking tour.",
+        hotel: "Hotel Groove Shinjuku", address: "1-29-1 Kabukicho, Shinjuku City, Tokyo", addressJa: "東京都新宿区歌舞伎町1-29-1",
+        phone: "+81 3-6233-8888", map: "Senso-ji Asakusa"
+      },
+      "2027-03-26": {
+        city: "Kyoto", stage: "Tour Day 3", isFlight: false,
+        blurb: "185 mph Nozomi Bullet Train to Kyoto! This afternoon Josh is exploring Higashiyama's historic wooden streets and Nishiki Market.",
+        focus: "Shinkansen transit, Yasaka Shrine, Nishiki Food Market, Solaria Nishitetsu check-in.",
+        hotel: "Solaria Nishitetsu Hotel Kyoto Premier", address: "509 Kamiosakacho, Nakagyo Ward, Kyoto 604-8001", addressJa: "京都府京都市中京区上大阪町509",
+        phone: "+81 75-708-5757", map: "Solaria Nishitetsu Hotel Kyoto Premier"
+      },
+      "2027-03-27": {
+        city: "Kyoto", stage: "Tour Day 4", isFlight: false,
+        blurb: "Walking through Arashiyama Bamboo Grove, authentic kimono tea ceremony, and the historic wooden stage of Kiyomizu-dera.",
+        focus: "Bamboo Grove, Tenryuji Temple, chanoyu tea ceremony in full kimono, Kiyomizudera.",
+        hotel: "Solaria Nishitetsu Hotel Kyoto Premier", address: "509 Kamiosakacho, Nakagyo Ward, Kyoto", addressJa: "京都府京都市中京区上大阪町509",
+        phone: "+81 75-708-5757", map: "Arashiyama Bamboo Grove"
+      },
+      "2027-03-28": {
+        city: "Nara & Osaka", stage: "Tour Day 5", isFlight: false,
+        blurb: "Bowing deer of Nara and the giant bronze Buddha at Todaiji, then private coach to Osaka and the neon signs of Dotonbori!",
+        focus: "Sacred Nara deer, Todaiji Daibutsu, Osaka Castle, Dotonbori street food.",
+        hotel: "voco Osaka Central (IHG)", address: "1-7-1 Kyomachibori, Nishi Ward, Osaka 550-0003", addressJa: "大阪府大阪市中央区京町堀1-7-1",
+        phone: "+81 6-6445-1100", map: "Dotonbori Osaka"
+      },
+      "2027-03-29": {
+        city: "Osaka", stage: "Tour Day 6", isFlight: false,
+        blurb: "Free day exploring Osaka street food and Kuromon Market, followed by a retro Shinsekai tour and the grand Farewell Dinner!",
+        focus: "Kuromon Market, Tsutenkaku Tower, kushikatsu, 6:00 PM Farewell Dinner.",
+        hotel: "voco Osaka Central (IHG)", address: "1-7-1 Kyomachibori, Nishi Ward, Osaka", addressJa: "大阪府大阪市中央区京町堀1-7-1",
+        phone: "+81 6-6445-1100", map: "voco Osaka Central"
+      },
+      "2027-03-30": {
+        city: "Osaka", stage: "USJ Bonus Day", isFlight: false,
+        blurb: "Core tour ends; Josh joined tour host Peter for a bonus day trip to Universal Studios Japan (Super Nintendo World & Donkey Kong)!",
+        focus: "Super Nintendo World, Donkey Kong Country, Mario Kart, post-trip night at voco Osaka.",
+        hotel: "voco Osaka Central (IHG)", address: "1-7-1 Kyomachibori, Nishi Ward, Osaka", addressJa: "大阪府大阪市中央区京町堀1-7-1",
+        phone: "+81 6-6445-1100", map: "Universal Studios Japan"
+      },
+      "2027-03-31": {
+        city: "Journey Home ✈", stage: "Departure Day", isFlight: true,
+        blurb: "Bullet train to Tokyo Haneda, flight UA882 across the Pacific to Chicago, and flight UA4542 home to Little Rock tonight!",
+        focus: "9 AM Nozomi to Tokyo, 5:15 PM flight to ORD, landing Little Rock at 9:54 PM CDT.",
+        hotel: "Home Sweet Home (USA)", address: "Little Rock, AR", addressJa: "アメリカ合衆国 アーカンソー州リトルロック",
+        phone: "N/A", map: "Haneda Airport, Tokyo"
+      }
+    };
+
+    function getJoshTimeZone(now) {
+      const t = now.getTime();
+      const tOutboundDep = new Date("2027-03-21T11:10:00-05:00").getTime();
+      const tOutboundMid = new Date("2027-03-21T18:00:00-05:00").getTime();
+      const tJapanArrival = new Date("2027-03-22T15:25:00+09:00").getTime();
+      const tReturnDep = new Date("2027-03-31T17:15:00+09:00").getTime();
+      const tReturnMid = new Date("2027-03-31T09:00:00-05:00").getTime();
+      const tHomeArrival = new Date("2027-03-31T21:54:00-05:00").getTime();
+
+      if (t < tOutboundDep) {
+        return {
+          timeZone: "America/Chicago",
+          label: "JST (JOSH)",
+          clockTitle: "Josh's Time • JST",
+          subLabel: "Josh Standard Time • Central (Little Rock, AR)",
+          isJapan: false,
+          status: "pre-trip"
+        };
+      } else if (t < tOutboundMid) {
+        return {
+          timeZone: "America/Chicago",
+          label: "JST (FLIGHT)",
+          clockTitle: "Josh's Time • JST",
+          subLabel: "Josh Standard Time • In-Flight (Pacific Transit)",
+          isJapan: false,
+          status: "flight-outbound"
+        };
+      } else if (t < tReturnDep) {
+        return {
+          timeZone: "Asia/Tokyo",
+          label: "JST (JAPAN)",
+          clockTitle: "Josh's Time • JST",
+          subLabel: "Japan Standard Time • Tokyo (UTC+9)",
+          isJapan: true,
+          status: "japan"
+        };
+      } else if (t < tReturnMid) {
+        return {
+          timeZone: "Asia/Tokyo",
+          label: "JST (FLIGHT)",
+          clockTitle: "Josh's Time • JST",
+          subLabel: "Josh Standard Time • In-Flight Return",
+          isJapan: false,
+          status: "flight-return"
+        };
+      } else {
+        return {
+          timeZone: "America/Chicago",
+          label: "JST (HOME)",
+          clockTitle: "Josh's Time • JST",
+          subLabel: "Josh Standard Time • Central (Safely Home)",
+          isJapan: false,
+          status: "home"
+        };
+      }
+    }
+
+    function updateClocks() {
+      const now = new Date();
+      const joshZone = getJoshTimeZone(now);
+      
+      // Josh's JST Time
+      const joshTimeStr = new Intl.DateTimeFormat('en-US', {
+        timeZone: joshZone.timeZone, hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true
+      }).format(now);
+      document.getElementById('japanTime').innerText = joshTimeStr;
+      if (document.getElementById('joshClockLabel')) {
+        document.getElementById('joshClockLabel').innerText = joshZone.clockTitle;
+      }
+      if (document.getElementById('joshClockSub')) {
+        document.getElementById('joshClockSub').innerText = joshZone.subLabel;
+      }
+
+      // Local Time
+      const localTimeStr = new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true
+      }).format(now);
+      document.getElementById('localTime').innerText = localTimeStr;
+
+      if (isManualSprite) return;
+
+      const departureDate = new Date("2027-03-21T07:00:00-05:00");
+      const returnDate = new Date("2027-03-31T21:54:00-05:00");
+      const diffDays = Math.ceil((departureDate - now) / 86400000);
+      const isPreTrip = now < departureDate;
+      const isPostTrip = now > returnDate;
+
+      // Time in minutes for Josh's current location (e.g. Central Time or JST)
+      const joshParts = new Intl.DateTimeFormat('en-US', {
+        timeZone: joshZone.timeZone, hour: 'numeric', minute: 'numeric', hour12: false
+      }).formatToParts(now);
+      let joshH = parseInt(joshParts.find(p => p.type === 'hour').value, 10);
+      let joshM = parseInt(joshParts.find(p => p.type === 'minute').value, 10);
+      if (joshH === 24) joshH = 0;
+      const joshMins = joshH * 60 + joshM;
+
+      const jstDateStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(now);
+      const isFlight = (SCHEDULE[jstDateStr] && SCHEDULE[jstDateStr].isFlight);
+
+      if (isFlight) {
+        applyPixelState("flight", "Josh is in transit / flight mode crossing time zones!", "✈️ PIXEL JOSH: SKY TRANSIT", "In-Flight over Pacific", "#60a5fa");
+      } else if (joshMins >= 1215 || joshMins < 300) {
+        // 8:15 PM to 5:00 AM: SLEEP MODE (Josh's local time)
+        applyPixelState(
+          "sleep",
+          isPreTrip ? "Josh is fast asleep for the night. (Do Not Disturb)" : "Josh is likely fast asleep in his hotel. (Do Not Disturb)",
+          "🛌 PIXEL JOSH: SLEEP MODE 💤",
+          isPreTrip ? "Sleeping in Little Rock (wake 5 AM)" : "Late night in Japan (" + joshTimeStr + ")",
+          "#c084fc"
+        );
+      } else if (joshMins >= 300 && joshMins < 510) {
+        // 5:00 AM to 8:30 AM: MORNING FUEL (Josh's local time)
+        applyPixelState(
+          "morning",
+          isPreTrip ? "Josh is up early, enjoying morning coffee & prep!" : "Josh is waking up, enjoying breakfast & getting coffee!",
+          "☕ PIXEL JOSH: MORNING FUEL",
+          isPreTrip ? "Early morning coffee • " + diffDays + "d to takeoff" : "Morning prep in Japan",
+          "#ffd166"
+        );
+      } else if (isPostTrip) {
+        applyPixelState("home", "Josh has returned safely home from Japan!", "🏡 PIXEL JOSH: SAFELY HOME", "Trip completed", "#38bdf8");
+      } else if (isPreTrip) {
+        applyPixelState("preparing", "Josh is home in the USA preparing for Japan! (" + diffDays + " days until takeoff)", "🎒 PIXEL JOSH: PREPARING", "Countdown: " + diffDays + " days to takeoff!", "#ffd166");
+      } else if (joshMins >= 1080 && joshMins < 1215) {
+        applyPixelState("dining", "Josh is out for dinner / izakaya food & evening wind-down.", "🍜 PIXEL JOSH: DINING & RAMEN", "Evening in Japan", "#fb923c");
+      } else {
+        applyPixelState("explore", "Josh is out exploring! Good time to send a message.", "🎒 PIXEL JOSH: QUESTING", "Active daytime in Japan", "#4ade80");
+      }
+    }
+
+    setInterval(updateClocks, 1000);
+    updateClocks();
+
+    // Render Timeline Chips
+    const chipsRow = document.getElementById('chipsRow');
+    const dates = Object.keys(SCHEDULE).sort();
+
+    // 0. Pre-Trip Explainer Chip
+    const preTripBtn = document.createElement('div');
+    preTripBtn.className = "chip active";
+    preTripBtn.innerText = "🎒 Pre-Trip";
+    preTripBtn.onclick = () => showPreTripStatus(preTripBtn);
+    chipsRow.appendChild(preTripBtn);
+
+    dates.forEach((d, idx) => {
+      const item = SCHEDULE[d];
+      const parts = d.split("-");
+      const label = parts[1] + "/" + parts[2];
+      const btn = document.createElement('div');
+      btn.className = "chip";
+      btn.innerText = label + " " + item.city.split(" ")[0];
+      btn.onclick = () => selectDay(d, btn);
+      chipsRow.appendChild(btn);
+    });
+
+    function showPreTripStatus(btnElement) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+
+      const now = new Date();
+      const depDate = new Date("2027-03-21T07:00:00-05:00");
+      const diffDays = Math.ceil((depDate - now) / 86400000);
+
+      document.getElementById('heroCity').innerText = "PRE-TRIP COUNTDOWN";
+      document.getElementById('heroStage').innerText = diffDays + " Days to Takeoff";
+      document.getElementById('heroBlurb').innerText = "Once Josh departs for Japan on March 21, this dynamic tracker will update in real-time to show where Josh is, his active hotel basecamp, and what he is doing at any given moment according to his itinerary!";
+      document.getElementById('heroFocus').innerHTML = "<strong>🎯 Pre-Trip Status:</strong> Packing gear & tour preparations. Tap any date chip below to preview the upcoming 10-day itinerary!";
+      document.getElementById('hotelName').innerText = "Citadines Shinjuku Tokyo (Arrival Night)";
+      document.getElementById('hotelAddress').innerText = "1-28-13 Shinjuku, Shinjuku City, Tokyo 160-0022";
+      document.getElementById('hotelAddressJa').innerText = "🇯🇵 東京都新宿区新宿1-28-13";
+      document.getElementById('hotelMapLink').href = "https://maps.apple.com/?q=" + encodeURIComponent("Citadines Shinjuku Tokyo 1-28-13 Shinjuku Tokyo");
+      document.getElementById('hotelPhoneLink').href = "tel:+81353797208";
+      document.getElementById('hotelPhoneLink').innerText = "📞 Call Front Desk (+81 3-5379-7208)";
+
+      document.getElementById('dayDetailBox').innerHTML = `
+        <strong style="color: #ffd166;">🎒 Pre-Trip Mode • ${diffDays} Days to Takeoff:</strong><br>
+        Josh's 10-day Japan adventure kicks off Sunday, March 21 on United & ANA via Houston (IAH) to Tokyo Haneda. Once in Japan, this space will actively reflect his status throughout the day.<br><br>
+        <strong>🏨 Arrival Basecamp:</strong> Citadines Shinjuku Tokyo (Mar 22–23), transferring to Hotel Groove Shinjuku on March 23.
+      `;
+    }
+
+    function selectDay(dateStr, btnElement) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+
+      const data = SCHEDULE[dateStr];
+      document.getElementById('heroCity').innerText = data.city.toUpperCase();
+      document.getElementById('heroStage').innerText = data.stage;
+      document.getElementById('heroBlurb').innerText = data.blurb;
+      document.getElementById('heroFocus').innerText = data.focus;
+      document.getElementById('hotelName').innerText = data.hotel;
+      document.getElementById('hotelAddress').innerText = data.address;
+      document.getElementById('hotelAddressJa').innerText = "🇯🇵 " + data.addressJa;
+      document.getElementById('hotelMapLink').href = "https://maps.apple.com/?q=" + encodeURIComponent(data.hotel + " " + data.address);
+      document.getElementById('hotelPhoneLink').href = (data.phone !== "N/A" ? "tel:" + data.phone.replace(/[^0-9+]/g, '') : "tel:+17272645657");
+      document.getElementById('hotelPhoneLink').innerText = (data.phone !== "N/A" ? "📞 Call Front Desk" : "📞 Emergency Hotline");
+
+      document.getElementById('dayDetailBox').innerHTML = `
+        <strong style="color: #ffd166;">${dateStr} • ${data.city} (${data.stage}):</strong><br>
+        ${data.blurb}<br><br>
+        <strong>🏨 Hotel:</strong> ${data.hotel} (${data.address})
+      `;
+    }
+
+    // Auto-detect current active date or default to pre-trip mode
+    const now = new Date();
+    const depDate = new Date("2027-03-21T07:00:00-05:00");
+    const nowJst = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(now);
+    if (now < depDate) {
+      showPreTripStatus(preTripBtn);
+    } else if (SCHEDULE[nowJst]) {
+      const activeIdx = dates.indexOf(nowJst);
+      if (activeIdx !== -1) {
+        selectDay(nowJst, chipsRow.children[activeIdx + 1]);
+      }
+    } else {
+      selectDay("2027-03-22", chipsRow.children[1]);
+    }
+  </script>
+</body>
+</html>

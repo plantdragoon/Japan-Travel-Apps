@@ -730,7 +730,13 @@ async function makeWidget(family = "medium") {
   let joshZone = getJoshTimeZone(now);
   let joshTime = new Intl.DateTimeFormat('en-US', { timeZone: joshZone.timeZone, hour: 'numeric', minute: '2-digit' }).format(now);
   let localTime = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(now);
-  let joshHour = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: joshZone.timeZone, hour: 'numeric', hour12: false }).format(now), 10);
+
+  // Time in minutes for Josh's current physical location (e.g. Central Time in USA or JST in Japan)
+  let joshParts = new Intl.DateTimeFormat('en-US', { timeZone: joshZone.timeZone, hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(now);
+  let joshHour = parseInt(joshParts.find(p => p.type === 'hour').value, 10);
+  let joshMin = parseInt(joshParts.find(p => p.type === 'minute').value, 10);
+  if (joshHour === 24) joshHour = 0;
+  let joshTotalMinutes = joshHour * 60 + joshMin;
 
   // Trip Dates
   let departureDate = new Date("2027-03-21T07:00:00-05:00");
@@ -739,13 +745,29 @@ async function makeWidget(family = "medium") {
   let isPreTrip = now < departureDate;
   let isPostTrip = now > returnDate;
 
-  // Pixel Josh Activity Status
+  // Pixel Josh Activity Status (Custom Sleep: 8:15 PM / 1215m to 5:00 AM / 300m in Josh's local time)
   let contactStatus;
-  if (isPreTrip) {
+  if (info.isFlightDay) {
     contactStatus = {
-      key: "preparing",
-      badge: "🎒 PREPARING",
-      text: "Pre-trip prep • " + diffDays + " days to takeoff!",
+      key: "flight",
+      badge: "✈️ SKY TRANSIT",
+      text: "Cruising at 35,000 ft • Flight Mode",
+      color: "#60a5fa"
+    };
+  } else if (joshTotalMinutes >= 1215 || joshTotalMinutes < 300) {
+    // 8:15 PM to 5:00 AM: SLEEP MODE (Josh's local time)
+    contactStatus = {
+      key: "sleep",
+      badge: "🛌 SLEEP MODE 💤",
+      text: isPreTrip ? ("Josh is fast asleep for the night • " + diffDays + "d to takeoff") : "Late night in Japan • Do not disturb",
+      color: "#c084fc"
+    };
+  } else if (joshTotalMinutes >= 300 && joshTotalMinutes < 510) {
+    // 5:00 AM to 8:30 AM: MORNING FUEL (Josh's local time)
+    contactStatus = {
+      key: "morning",
+      badge: "☕ MORNING FUEL",
+      text: isPreTrip ? ("Up early, coffee & prep • " + diffDays + "d to takeoff!") : "Waking up & breakfast • Good time to text",
       color: "#ffd166"
     };
   } else if (isPostTrip) {
@@ -755,28 +777,15 @@ async function makeWidget(family = "medium") {
       text: "Trip completed • Josh is back safely!",
       color: "#38bdf8"
     };
-  } else if (info.isFlightDay) {
+  } else if (isPreTrip) {
     contactStatus = {
-      key: "flight",
-      badge: "✈️ SKY TRANSIT",
-      text: "Cruising at 35,000 ft • Flight Mode",
-      color: "#60a5fa"
-    };
-  } else if (joshHour >= 23 || joshHour < 7) {
-    contactStatus = {
-      key: "sleep",
-      badge: "🛌 SLEEP MODE 💤",
-      text: "Late night in Japan • Do not disturb",
-      color: "#c084fc"
-    };
-  } else if (joshHour >= 7 && joshHour < 9) {
-    contactStatus = {
-      key: "morning",
-      badge: "☕ MORNING FUEL",
-      text: "Waking up & breakfast • Good time to text",
+      key: "preparing",
+      badge: "🎒 PREPARING",
+      text: "Pre-trip prep • " + diffDays + " days to takeoff!",
       color: "#ffd166"
     };
-  } else if (joshHour >= 18 && joshHour < 23) {
+  } else if (joshTotalMinutes >= 1080 && joshTotalMinutes < 1215) {
+    // 6:00 PM to 8:15 PM in Japan: Dinner & wind-down
     contactStatus = {
       key: "dining",
       badge: "🍜 DINING & RAMEN",
@@ -784,6 +793,7 @@ async function makeWidget(family = "medium") {
       color: "#fb923c"
     };
   } else {
+    // Daytime exploration in Japan
     contactStatus = {
       key: "explore",
       badge: "🎒 QUESTING",
@@ -851,7 +861,11 @@ async function makeWidget(family = "medium") {
     cBadge.lineLimit = 1;
     cBadge.minimumScaleFactor = 0.8;
 
-    let cNote = cInfo.addText(isPreTrip ? (diffDays + "d to takeoff") : (joshHour >= 23 || joshHour < 7 ? "Sleeping in JST" : "Active in Tokyo"));
+    let cNoteText = contactStatus.key === "sleep" ? (isPreTrip ? "Sleeping (wake 5 AM)" : "Sleeping in JST") :
+      contactStatus.key === "morning" ? (isPreTrip ? "Up early • " + diffDays + "d to go" : "Morning in Japan") :
+      isPreTrip ? (diffDays + "d to takeoff") :
+      (contactStatus.key === "dining" ? "Dinner in Tokyo" : "Active in Tokyo");
+    let cNote = cInfo.addText(cNoteText);
     cNote.font = Font.mediumSystemFont(8);
     cNote.textColor = new Color("#cbd5e1");
     cNote.lineLimit = 1;
